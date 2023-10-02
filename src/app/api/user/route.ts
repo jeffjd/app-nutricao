@@ -21,5 +21,5 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ message: `cadastro do ${tipodecadastro} realizado com sucesso` });
+  return NextResponse.json({ message: `cadastro realizado com sucesso!` });
 }
