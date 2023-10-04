@@ -1,10 +1,9 @@
-import Image from 'next/image'
-import Cadastro from '../modules/cadastro/cadastro'
+import Home from '../modules/Home/Home';
 
-export default function Home() {
+export default function HomeScreen() {
   return (
     <main className="">
-      <Cadastro />
+      <Home />
     </main>
-  )
+  );
 }

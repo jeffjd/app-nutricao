@@ -2,8 +2,8 @@
 
 import { useFormik } from 'formik';
 import Link from 'next/link';
-import { FaAngleLeft } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
+import { FaAngleLeft } from 'react-icons/fa6';
 
 const Cadastro: React.FC = () => {
   const initialValues = {
@@ -15,7 +15,7 @@ const Cadastro: React.FC = () => {
     initialValues,
     onSubmit: async (values) => {
       try {
-        const response = await fetch('/api/create/paciente', {
+        const response = await fetch('/api/create/nutricionista', {
           method: 'POST',
           body: JSON.stringify(values),
         });
@@ -33,7 +33,7 @@ const Cadastro: React.FC = () => {
         <Link href="/">
           <FaAngleLeft size={16} className="absolute left-5 top-7" />
         </Link>
-        Cadastro
+        Cadastrar Nutricionista
       </h1>
       <form className="flex flex-col gap-4 mt-5" onSubmit={handleSubmit}>
         <span className="text-center">Email</span>
