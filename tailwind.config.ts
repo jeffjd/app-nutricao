@@ -12,6 +12,7 @@ const config: Config = {
       colors: {
         azulclaro: '#06BEE159',
         azulescuro: '#2541B265',
+        verdeazulado: '#05F7DE',
         amarelo: '#E06B0770',
         cinza: '#D9D9D9',
       },
