@@ -10,7 +10,8 @@ export async function POST(request: Request) {
       },
     });
     if (user) {
-      return NextResponse.json({ user });
+      const { senha, ...data } = user;
+      return NextResponse.json({ ok: true, data });
     }
 
     return NextResponse.json({ message: `Usuário não encontrado.` });

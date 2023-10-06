@@ -1,6 +1,7 @@
 'use client';
 
 import { ToastContainer } from 'react-toastify';
+import { ProviderAuth } from '@/context/ProviderNutricao';
 
 interface ILayout {
   children: React.ReactNode;
@@ -9,8 +10,10 @@ interface ILayout {
 const Layout: React.FC<ILayout> = ({ children }) => {
   return (
     <>
-      {children}
-      <ToastContainer />
+      <ProviderAuth>
+        {children}
+        <ToastContainer />
+      </ProviderAuth>
     </>
   );
 };

@@ -10,7 +10,8 @@ export async function GET(request: Request) {
       },
     });
     if (user) {
-      return NextResponse.json({ message: `Temos o paciente!` });
+      const { senha, ...data } = user;
+      return NextResponse.json({ ok: true, data });
     }
   } else {
     const user = await prisma.nutricionista.findFirst({

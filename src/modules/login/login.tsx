@@ -4,6 +4,8 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { TType } from '../Home/Home';
+import { useAuth } from '@/context/ProviderNutricao';
+import { useRouter } from 'next/navigation';
 
 interface ILogin {
   login: TType | null;
@@ -11,6 +13,9 @@ interface ILogin {
 }
 
 const Login: React.FC<ILogin> = ({ login, click }) => {
+  const router = useRouter();
+  const { dispatch } = useAuth();
+
   const initialValues = {
     email: '',
     senha: '',
@@ -23,10 +28,12 @@ const Login: React.FC<ILogin> = ({ login, click }) => {
           method: 'POST',
           body: JSON.stringify({ ...values }),
         });
-        const data = await response.json();
-        if (!data.ok) {
-          toast.info(data.message);
+        const { ok, data } = await response.json();
+        if (ok) {
+          dispatch({ type: 'add', payload: { ...data, type: login } });
+          router.push(`/${login}/perfil`);
         }
+        toast.info(data.message)
       } catch (error) {
         toast.warning('Falha no login');
       }

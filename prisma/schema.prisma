@@ -10,16 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Nutricionista{
-  id  String  @id @default(uuid())
+model nutricionista{
+  id  String  @id
   nome  String
-  email String  @unique
+  email String  @unique(map: "Nutricionista_email_key")
   senha String
 }
 
-model Paciente {
-  id  String  @id @default(uuid())
+model paciente {
+  id  String  @id
   nome  String
-  email String  @unique
+  email String  @unique(map: "Paciente_email_key")
   senha String
 }
