@@ -10,13 +10,18 @@ interface IIlistarConteudo {
 }
 
 const ListarConteudo: React.FC<IIlistarConteudo> = ({ nome, conteudo }) => {
-  console.log(nome);
   return (
-    <div className="w-full flex flex-col">
-      <div>{nome}</div>
+    <div className="w-full flex flex-col py-7">
+      <div className="flex justify-between">
+        <div className="text-2xl pl-4 font-medium">{nome}</div>
+        <div className="text-lg pr-4">Ver tudo</div>
+      </div>
       <div className="flex overflow-x-auto">
         {conteudo.map((item, index) => (
-          <div key={index} className="bg-white m-4 p-4 shadow-lg rounded-lg">
+          <div
+            key={index}
+            className="bg-white m-4 p-4 shadow-lg rounded-lg w-fit"
+          >
             <MostrarObjeto nome={item.nome} />
           </div>
         ))}

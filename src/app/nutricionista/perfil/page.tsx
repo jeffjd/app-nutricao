@@ -1,9 +1,13 @@
-import PerfilNutricionista from "../../../modules/perfil/nutricionista";
+import PerfilNutricionista from '../../../modules/perfil/nutricionista/nutricionista';
+
+const nutricionista = {
+  nome: 'Doutor Trogodita',
+};
 
 export default function PerfilNutricionistaScreen() {
-    return (
-        <main>
-            <PerfilNutricionista />
-        </main>
-    );
+  return (
+    <main>
+      <PerfilNutricionista nutricionista={nutricionista} />
+    </main>
+  );
 }
