@@ -7,6 +7,8 @@ const config: Config = {
       colors: {
         azulclaro: '#06BEE159',
         azulescuro: '#2541B265',
+        azulclarobotao: '#06BEE1',
+        azulescurobotao: '#2541B2',
         verdeazulado: '#05F7DE',
         amarelo: '#E06B0770',
         cinza: '#D9D9D9',

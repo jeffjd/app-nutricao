@@ -1,4 +1,4 @@
-import MostrarObjeto from '../MostrarObjeto/MostrarObjeto';
+import Card from '../Card';
 
 interface IObjeto {
   nome: string;
@@ -22,7 +22,7 @@ const ListarConteudo: React.FC<IIlistarConteudo> = ({ nome, conteudo }) => {
             key={index}
             className="bg-white m-4 p-4 shadow-lg rounded-lg w-fit"
           >
-            <MostrarObjeto nome={item.nome} />
+            <Card nome={item.nome} />
           </div>
         ))}
       </div>

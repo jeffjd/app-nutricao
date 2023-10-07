@@ -1,7 +1,4 @@
-import Footer from '../../../components/Footer/Footer';
-import Header from '../../../components/Header/Header';
-import ListarConteudo from '../../../components/ListarConteudo/ListarConteudo';
-import NavNutricionista from '../../../components/NavNutricionista/NavNutricionista';
+import {CardList} from '@/components'
 
 interface IPerfilNutricionista {
   nutricionista: {
@@ -37,13 +34,12 @@ const PerfilNutricionista: React.FC<IPerfilNutricionista> = ({
 }) => {
   return (
     <>
-      <Header nome={nutricionista.nome} />
-      <NavNutricionista />
+
       <div className="max-w-6xl m-auto bg-azulescuro">
-        <ListarConteudo nome="Pacientes" conteudo={pacientes} />
-        <ListarConteudo nome="Receitas" conteudo={receitas} />
+        <CardList nome="Pacientes" conteudo={pacientes} />
+        <CardList nome="Receitas" conteudo={receitas} />
       </div>
-      <Footer />
+
     </>
   );
 };
