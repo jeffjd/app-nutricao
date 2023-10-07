@@ -23,7 +23,7 @@ const ListarTags: React.FC<ListarTagsProps> = ({ nomes }) => {
 
   return (
     <div>
-      <h2>Selecione os nomes:</h2>
+      <h2>Marcadores:</h2>
       <ul className="space-y-2">
         {nomes.map((nome) => (
           <li key={nome.id} className="flex items-center">
