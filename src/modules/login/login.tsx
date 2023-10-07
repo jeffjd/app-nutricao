@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { TType } from '../Home/Home';
 import { useAuth } from '@/context/ProviderNutricao';
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components';
 
 interface ILogin {
   login: TType | null;
@@ -33,7 +34,7 @@ const Login: React.FC<ILogin> = ({ login, click }) => {
           dispatch({ type: 'add', payload: { ...data, type: login } });
           router.push(`/${login}/perfil`);
         }
-        toast.info(data.message)
+        toast.info(data.message);
       } catch (error) {
         toast.warning('Falha no login');
       }
@@ -45,23 +46,25 @@ const Login: React.FC<ILogin> = ({ login, click }) => {
       <h1 className="text-center text-3xl bg-azulescuro mt-5 py-5">
         Login {login}
       </h1>
-      <form className="flex flex-col gap-4 mt-5" onSubmit={handleSubmit}>
-        <span className="text-center">Email</span>
-        <input
-          className="w-1/2 ml-auto mr-auto rounded-md"
+      <form
+        className="flex flex-col gap-4 mt-5 w-80 mx-auto"
+        onSubmit={handleSubmit}
+      >
+        <Input
+          label="E-mail"
           type="email"
           name="email"
           onChange={handleChange}
           value={values.email}
         />
-        <span className="text-center mt-5">Senha</span>
-        <input
-          className="w-1/2 ml-auto mr-auto rounded-md"
+        <Input
+          label="Senha"
           type="password"
           name="senha"
           onChange={handleChange}
           value={values.senha}
         />
+
         <div className="flex justify-center gap-4">
           <button
             type="button"

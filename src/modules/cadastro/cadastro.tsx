@@ -4,8 +4,13 @@ import { useFormik } from 'formik';
 import Link from 'next/link';
 import { FaAngleLeft } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
+import { Input } from '@/components';
 
-const Cadastro: React.FC = () => {
+interface CadastroProps {
+  type: string;
+}
+
+const Cadastro: React.FC<CadastroProps> = ({ type }) => {
   const initialValues = {
     email: '',
     nome: '',
@@ -15,7 +20,7 @@ const Cadastro: React.FC = () => {
     initialValues,
     onSubmit: async (values) => {
       try {
-        const response = await fetch('/api/create/paciente', {
+        const response = await fetch(`api/create/${type}`, {
           method: 'POST',
           body: JSON.stringify(values),
         });
@@ -28,49 +33,58 @@ const Cadastro: React.FC = () => {
   });
 
   return (
-    <div className="max-w-4xl m-auto rounded-md bg-azulclaro">
-      <h1 className="text-center text-3xl bg-azulescuro mt-5 py-5 relative">
-        <Link href="/">
-          <FaAngleLeft size={16} className="absolute left-5 top-7" />
-        </Link>
-        Cadastro
-      </h1>
-      <form className="flex flex-col gap-4 mt-5" onSubmit={handleSubmit}>
-        <span className="text-center">Email</span>
-        <input
-          className="w-1/2 ml-auto mr-auto rounded-md"
-          type="email"
-          name="email"
-          onChange={handleChange}
-          value={values.email}
-        />
-        <span className="text-center mt-5">Nome</span>
-        <input
-          className="w-1/2 ml-auto mr-auto rounded-md"
-          type="text"
-          name="nome"
-          onChange={handleChange}
-          value={values.nome}
-        />
-        <span className="text-center mt-5">Senha</span>
-        <input
-          className="w-1/2 ml-auto mr-auto rounded-md"
-          type="password"
-          name="senha"
-          onChange={handleChange}
-          value={values.senha}
-        />
-        <div className="flex justify-center w-full">
-          <button type="submit" className="p-3 px-10 mb-5 rounded-md">
-            Enviar
-          </button>
-        </div>
-      </form>
-      <Link href="/">
-        <span className="text-center py-5 block">
-          Já tem cadastro? Faça seu login!
-        </span>
-      </Link>
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 relative">
+          <Link href="/">
+            <FaAngleLeft size={16} className="absolute left-5 top-2" />
+          </Link>
+          Cadastro {type}
+        </h2>
+      </div>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <Input
+            label="Nome"
+            name="nome"
+            type="text"
+            value={values.nome}
+            onChange={handleChange}
+          />
+          <Input
+            label="E-mail"
+            name="email"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+          />
+          <Input
+            label="Senha"
+            name="senha"
+            type="password"
+            value={values.senha}
+            onChange={handleChange}
+          />
+          <div>
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Cadastrar
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Já é cadastrado?
+          <Link
+            href="/"
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 ml-1"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

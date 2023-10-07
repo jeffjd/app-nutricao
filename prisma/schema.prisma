@@ -11,15 +11,32 @@ datasource db {
 }
 
 model nutricionista{
-  id  String  @id
+  id    String @id @default(uuid())
   nome  String
   email String  @unique(map: "Nutricionista_email_key")
   senha String
 }
 
 model paciente {
-  id  String  @id
+  id    String @id @default(uuid())
   nome  String
   email String  @unique(map: "Paciente_email_key")
   senha String
+}
+
+
+model ingrediente {
+  id       String  @id @default(uuid())
+  nome     String
+  calorias Int
+  unidade  Unidade
+}
+
+enum Unidade {
+  colher
+  porcao
+  grama
+  kilograma
+  mililitros
+  litros
 }
