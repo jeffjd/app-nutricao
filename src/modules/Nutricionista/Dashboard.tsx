@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
-import ReceitasVitrine from '../ReceitasVitrine/ReceitasVitrine';
-
+import DashboardRecipe from '../Recipe/DashboardRecipe';
 const Dashboard: React.FC = () => {
   const [nav, setNav] = useState<number>(0);
 
@@ -12,7 +11,7 @@ const Dashboard: React.FC = () => {
       case 0:
         return <>pacientes...</>;
       case 1:
-        return <ReceitasVitrine />;
+        return <DashboardRecipe />;
       case 2:
         return <>cadastro...</>;
     }

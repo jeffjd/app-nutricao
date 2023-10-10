@@ -29,7 +29,7 @@ const ingredientes = [
   { nome: 'Alface', quantidade: '2' },
 ];
 
-const ReceitasVitrine: React.FC = () => {
+const RecipeShowcase: React.FC = () => {
   const nutricionista = {
     nome: 'Doutor Fulano',
   };
@@ -80,4 +80,4 @@ const ReceitasVitrine: React.FC = () => {
   );
 };
 
-export default ReceitasVitrine;
+export default RecipeShowcase;

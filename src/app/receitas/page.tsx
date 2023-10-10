@@ -1,4 +1,4 @@
-import ReceitasVitrine from "../../modules/ReceitasVitrine/ReceitasVitrine";
+import ReceitasVitrine from "../../modules/Recipe/RecipeShowcase";
 
 
 export default function ReceitasScreen() {

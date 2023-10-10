@@ -5,5 +5,6 @@ import InputSearch from './InputSearch'
 import TagList from './TagList'
 import Card from './Card'
 import CardList from './CardList'
+import Select from './Select'
 
-export { Input, Button, Header, InputSearch, TagList, Card, CardList };
+export { Input, Button, Header, InputSearch, TagList, Card, CardList, Select };
