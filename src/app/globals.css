@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --green: 0 121 107;
+    --orange: 255 167 38;
+    --blue-500: 3 169 244;
+    --blue-700: 37 65 178;
+    --yellow: 255 235 59;
+  }
+}

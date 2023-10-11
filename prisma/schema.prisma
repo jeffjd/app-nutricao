@@ -32,6 +32,23 @@ model ingrediente {
   unidade  Unidade
 }
 
+model receita {
+  id           String                  @id @default(uuid())
+  nome         String
+  ingredientes ingredienteQuantidade[]
+}
+
+model ingredienteQuantidade {
+  id         String   @id @default(uuid())
+  nome       String
+  receita    receita? @relation(fields: [receitaId], references: [id])
+  receitaId  String?
+  quantidade Int
+  calorias   Int
+  unidade    Unidade
+}
+
+
 enum Unidade {
   colher
   porcao

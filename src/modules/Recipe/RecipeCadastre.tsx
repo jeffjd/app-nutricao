@@ -1,47 +1,80 @@
 import { useFormik } from 'formik';
 import { Button, Input, Select } from '../../components';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { FaAngleUp, FaTimes } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa6';
 
-const ingredientes = [
-  {
-    id: '12asd23',
-    nome: 'Coxa de Frango',
-    calorias: 120,
-    unidade: 1,
-  },
-  {
-    id: '1232d23',
-    nome: 'Feijão',
-    calorias: 120,
-    unidade: 1,
-  },
-  {
-    id: 'asd23',
-    nome: 'Arroz',
-    calorias: 120,
-    unidade: 1,
-  },
-];
+// const ingredientes = [
+//   {
+//     id: '12asd23',
+//     nome: 'Coxa de Frango',
+//     calorias: 120,
+//     unidade: 1,
+//   },
+//   {
+//     id: '1232d23',
+//     nome: 'Feijão',
+//     calorias: 120,
+//     unidade: 1,
+//   },
+//   {
+//     id: 'asd23',
+//     nome: 'Arroz',
+//     calorias: 120,
+//     unidade: 1,
+//   },
+// ];
 
-const ingredientsNameList = ['Coxa de Frango', 'Feijão', 'Arroz'];
+interface IIngredients {
+  calorias: number;
+  id: string;
+  nome: string;
+  unidade: string;
+  quantidade: number;
+}
+
+interface IInitialValues {
+  nome: string;
+  ingredientes: IIngredients[];
+}
 
 const RecipeCadastre: React.FC = () => {
-const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [optionsIngredients, setOptionsIngredientes] = useState<IIngredients[]>(
+    [],
+  );
 
-  const initialValues = {
+  const initialValues: IInitialValues = {
     nome: '',
     ingredientes: [],
-    calorias: '',
   };
 
-  const { values, handleSubmit, handleChange } = useFormik({
+  useEffect(() => {
+    fetch('/api/ingredientes')
+      .then((res) => res.json())
+      .then((data) => {
+        const list = [];
+        for (let i = 0; data.data.length > i; i++) {
+          list.push({ ...data.data[i], quantidade: 0 });
+        }
+        setOptionsIngredientes(list);
+      });
+  }, []);
+
+  const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
     initialValues,
     onSubmit: async (values) => {
       try {
-        const response = await fetch(`/api/create/recipe`, {
+        const { nome, ingredientes } = values;
+        const newArray = [];
+        for (let i = 0; ingredientes.length > i; i++) {
+          const { id, ...rest } = ingredientes[i];
+          newArray.push({ ...rest });
+        }
+
+        const response = await fetch(`/api/receita`, {
           method: 'POST',
-          body: JSON.stringify(values),
+          body: JSON.stringify({ nome, ingredientes: newArray }),
         });
         const data = await response.json();
         toast.success(data.message);
@@ -68,23 +101,82 @@ const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
             onChange={handleChange}
           />
 
-          <Select options={ingredientsNameList} selectedOptions={selectedIngredients} changeSelectedOptions={setSelectedIngredients} />
+          <Select
+            name="ingredientes"
+            options={optionsIngredients}
+            values={values.ingredientes}
+            setFieldValue={setFieldValue}
+          />
+          <ul className="border p-4 divide-y-2">
+            {values.ingredientes.length > 0 ? (
+              values.ingredientes.map((ingrediente, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center my-2"
+                >
+                  <div className="flex items-center divide-x-2 gap-2 pt-2">
+                    <span>{ingrediente.nome}</span>
+                    <span className="pl-2">
+                      calorias: {ingrediente.calorias}
+                    </span>
+                    <span className="pl-2">unidade: {ingrediente.unidade}</span>
+                    <span className="pl-2 flex items-center gap-2">
+                      <span
+                        className="border rounded-full h-8 w-8 flex justify-center items-center text-red-500 cursor-pointer"
+                        onClick={() => {
+                          if (ingrediente.quantidade > 0) {
+                            const minus = ingrediente.quantidade - 1;
 
-          <div>
-            {selectedIngredients.map((ingredient, index) => (
-              <p key={index}>{ingredient}</p>
-            ))}
-          </div>
+                            setFieldValue(
+                              `ingredientes[${index}].quantidade`,
+                              minus,
+                            );
+                          }
+                        }}
+                      >
+                        <FaAngleDown />
+                      </span>
+                      {ingrediente.quantidade}
+                      <span
+                        className="border rounded-full h-8 w-8 flex justify-center items-center text-green cursor-pointer"
+                        onClick={() => {
+                          const some = ingrediente.quantidade + 1;
 
+                          setFieldValue(
+                            `ingredientes[${index}].quantidade`,
+                            some,
+                          );
+                        }}
+                      >
+                        <FaAngleUp />
+                      </span>
+                    </span>
+                  </div>
+                  <FaTimes
+                    size={12}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      let novoArray = values.ingredientes.filter(
+                        (item) => item.id !== ingrediente.id,
+                      );
+                      setFieldValue('ingredientes', novoArray);
+                    }}
+                  />
+                </li>
+              ))
+            ) : (
+              <div>Selecione os ingredientes para a receita.</div>
+            )}
+          </ul>
 
-
+          {/*
           <select className="block w-full rounded-md border py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 outline-none">
             {ingredientes.map((ingredient, index) => (
               <option key={index} value={ingredient.id}>
                 {ingredient.nome}
               </option>
             ))}
-          </select>
+            </select>*/}
 
           <div>
             <Button type="submit">Cadastrar</Button>

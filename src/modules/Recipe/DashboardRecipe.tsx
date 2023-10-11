@@ -3,7 +3,7 @@ import RecipeShowcase from './RecipeShowcase';
 import RecipeCadastre from './RecipeCadastre';
 
 const DashboardRecipe: React.FC = () => {
-  const [nav, setNav] = useState<number>(0);
+  const [nav, setNav] = useState<number>(1);
 
   const Context = () => {
     switch (nav) {

@@ -7,24 +7,26 @@ type ButtonProps = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const modelButton = {
-  normal:
-    'flex w-full justify-center rounded-md bg-azulescurobotao px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-azulclarobotao focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600',
+  normal: 'bg-blue-700 text-white hover:bg-blue-500',
   outline:
-    'flex w-full justify-center rounded-md border border-azulescuro text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2 transition duration-300 ease-in-out',
+    'border-blue text-blue hover:bg-green hover:text-white hover:border-green',
   disabled:
-    'flex w-full justify-center rounded-md bg-gray-300 px-3 py-1.5 text-sm font-semibold leading-6 text-gray-700 shadow-sm disabled:cursor-not-allowed disabled:opacity-50',
+    'bg-gray-300 text-gray-700 disabled:cursor-not-allowed disabled:opacity-50',
 };
 
 const Button: React.FC<ButtonProps> = ({
   model = 'normal',
   children,
   disabled,
+  className,
   ...props
 }) => {
   return (
     <button
       disabled={disabled}
-      className={`${disabled ? modelButton['disabled'] : modelButton[model]}`}
+      className={`flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 shadow-sm transition ease-in-out border ${className} ${
+        modelButton[disabled ? 'disabled' : model]
+      }`}
       {...props}
     >
       {children}

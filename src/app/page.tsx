@@ -1,9 +1,9 @@
-import Home from '../modules/Home/Home';
+import Login from '@/modules/login/login';
 
 export default function HomeScreen() {
   return (
-    <main className="">
-      <Home />
+    <main>
+      <Login />
     </main>
   );
 }

@@ -1,56 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { Input } from '..';
 
 interface AutoCompleteInputProps {
-  options: string[];
-  selectedOptions: string[];
-  changeSelectedOptions: (option: string[]) => void;
+  name: string;
+  options: any[];
+  values: any[];
+  setFieldValue: (name: string, value: any) => void;
 }
 
-const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({ options, selectedOptions, changeSelectedOptions }) => {
-  const [inputValue, setInputValue] = useState<string>("");
-  const [filteredOptions, setFilteredOptions] = useState<string[]>([]);
+const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
+  options,
+  values,
+  name,
+  setFieldValue,
+}) => {
+  const [inputValue, setInputValue] = useState<string>('');
+  const [filteredOptions, setFilteredOptions] = useState<any[]>([]);
   const [showOptions, setShowOptions] = useState<boolean>(false);
+
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, [options]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
 
     const filtered = options.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase())
+      option.nome.toLowerCase().includes(value.toLowerCase()),
     );
+
     setFilteredOptions(filtered);
 
     setShowOptions(!!value);
   };
 
   const selectOption = (option: string) => {
-    setInputValue(option);
-    changeSelectedOptions(selectedOptions.concat(option));
+    setInputValue('');
+    const newArray = [...values, option];
+    setFieldValue(name, newArray);
     setShowOptions(false);
+    setFilteredOptions(options);
   };
 
+  function searchItem(objA: any) {
+    return values.some((objB) => objB.id === objA.id);
+  }
+
   return (
-    <div className="relative">
-      <input
-        type="text"
-        placeholder="Digite algo..."
+    <div onMouseLeave={() => setShowOptions(false)}>
+      <Input
+        label="Ingredientes"
+        placeholder="Procurar ingrediente..."
         value={inputValue}
+        onClick={() => setShowOptions(true)}
         onChange={handleInputChange}
-        className="w-full border border-gray-300 rounded-md py-2 px-4"
       />
-      {showOptions && filteredOptions.length > 0 && (
-        <ul className="block w-full rounded-md border py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 outline-none">
-          {filteredOptions.map((option) => (
-            <li
-              key={option}
-              onClick={() => selectOption(option)}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-            >
-              {option}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="relative">
+        {showOptions ? (
+          <ul className="absolute z-10 bg-white w-full rounded-md drop-shadow">
+            {filteredOptions.map((option) => {
+              const hasSelect = searchItem(option);
+
+              return (
+                <li
+                  key={option.id}
+                  onClick={() =>
+                    !hasSelect ? selectOption(option) : undefined
+                  }
+                  className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
+                    hasSelect ? 'bg-slate-300 hover:bg-slate-300' : ''
+                  }`}
+                >
+                  {option.nome}
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+      </div>
     </div>
   );
 };

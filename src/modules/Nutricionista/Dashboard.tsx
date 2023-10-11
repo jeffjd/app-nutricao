@@ -1,9 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
 import DashboardRecipe from '../Recipe/DashboardRecipe';
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  auth: any;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   const [nav, setNav] = useState<number>(0);
 
   const Context = () => {
@@ -22,7 +26,7 @@ const Dashboard: React.FC = () => {
       <div className="max-w-6xl m-auto bg-azulescuro">
         <div className="flex justify-around py-12">
           <span className="flex align-middle text-3xl md:text-5xl">
-            Fulano de tal
+            {auth.nome}
           </span>
           <div className="bg-gray-500 w-28 h-28 rounded-full md:w-36 md:h-36 flex justify-center items-center">
             <FaUser size={40} className="text-white" />

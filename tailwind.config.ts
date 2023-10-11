@@ -12,6 +12,14 @@ const config: Config = {
         verdeazulado: '#05F7DE',
         amarelo: '#E06B0770',
         cinza: '#D9D9D9',
+        //
+        green: 'rgb(var(--green) / <alpha-value>)',
+        orange: 'rgb(var(--orange) / <alpha-value>)',
+        yellow: 'rgb(var(--yellow) / <alpha-value>)',
+        blue: {
+          500: 'rgb(var(--blue-500) / <alpha-value>)',
+          700: 'rgb(var(--blue-700) / <alpha-value>)',
+        },
       },
     },
   },
