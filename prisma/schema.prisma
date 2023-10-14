@@ -11,25 +11,29 @@ datasource db {
 }
 
 model nutricionista{
-  id    String @id @default(uuid())
-  nome  String
-  email String  @unique(map: "Nutricionista_email_key")
-  senha String
+  id       String     @id @default(uuid())
+  nome     String
+  email    String     @unique(map: "Nutricionista_email_key")
+  senha    String
+  paciente paciente[]
 }
 
 model paciente {
-  id    String @id @default(uuid())
-  nome  String
-  email String  @unique(map: "Paciente_email_key")
-  senha String
+  id              String         @id @default(uuid())
+  nome            String
+  email           String         @unique(map: "Paciente_email_key")
+  senha           String
+  nutricionista   nutricionista? @relation(fields: [nutricionistaId], references: [id])
+  nutricionistaId String?
 }
 
 
 model ingrediente {
-  id       String  @id @default(uuid())
-  nome     String
-  calorias Int
-  unidade  Unidade
+  id                    String                  @id @default(uuid())
+  nome                  String
+  calorias              Int
+  unidade               Unidade
+  ingredienteQuantidade ingredienteQuantidade[]
 }
 
 model receita {
@@ -39,13 +43,12 @@ model receita {
 }
 
 model ingredienteQuantidade {
-  id         String   @id @default(uuid())
-  nome       String
-  receita    receita? @relation(fields: [receitaId], references: [id])
-  receitaId  String?
-  quantidade Int
-  calorias   Int
-  unidade    Unidade
+  id            String       @id @default(uuid())
+  receita       receita?     @relation(fields: [receitaId], references: [id])
+  receitaId     String?
+  ingrediente   ingrediente? @relation(fields: [ingredienteId], references: [id])
+  ingredienteId String?
+  quantidade    Int
 }
 
 

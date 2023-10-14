@@ -1,80 +1,90 @@
 'use client';
 
-import { InputSearch, TagList, Card } from '@/components';
+import { Input } from '@/components';
+import { useEffect, useState } from 'react';
 
-const nomes = [
-  { id: 1, nome: 'Marcador 1' },
-  { id: 2, nome: 'Marcador 2' },
-  { id: 3, nome: 'Marcador 3' },
-];
+interface IIngrediente {
+  calorias: number;
+  id: string;
+  nome: string;
+  unidade: string;
+}
 
-const receitas = [
-  { nome: 'Prato do almoço' },
-  { nome: 'Prato do janta' },
-  { nome: 'Lanche' },
-  { nome: 'Refeição da janta' },
-  { nome: 'Refeição da almoço' },
-  { nome: 'Brunch' },
-  { nome: 'Comida gostosa' },
-  { nome: 'Comida horrível' },
-  { nome: 'Comida Saborosa' },
-];
+interface IIngredienteQuantidade {
+  id: string;
+  receitaId: string;
+  ingredienteId: string;
+  quantidade: number;
+  ingrediente: IIngrediente;
+}
 
-const ingredientes = [
-  { nome: 'Batata', quantidade: '3' },
-  { nome: 'Feijão', quantidade: '200g' },
-  { nome: 'Arroz', quantidade: '200g' },
-  { nome: 'Coxa de Frango', quantidade: '2' },
-  { nome: 'Ovo', quantidade: '1' },
-  { nome: 'Alface', quantidade: '2' },
-];
+interface IReceita {
+  id: string;
+  nome: string;
+  ingredientes: IIngredienteQuantidade[];
+}
 
 const RecipeShowcase: React.FC = () => {
+  const [receitas, setReceitas] = useState<IReceita[]>([]);
+
+  useEffect(() => {
+    fetch('/api/receita')
+      .then((res) => res.json())
+      .then((data) => {
+        setReceitas(data);
+      });
+  }, []);
+
   const nutricionista = {
     nome: 'Doutor Fulano',
   };
   return (
-    <div>
-
-      <InputSearch />
-      <div className="max-w-6xl m-auto bg-azulescuro flex justify-around">
-        <div className="flex justify-around flex-wrap ">
-          {receitas.map((receita, index) => (
-            <div
-              key={index}
-              className="bg-white m-4 p-4 shadow-lg rounded-lg w-52"
-            >
-              <Card nome={receita.nome} />
-            </div>
-          ))}
-        </div>
-        <div className="container mx-auto p-4 flex justify-center">
-          <TagList nomes={nomes} />
-        </div>
+    <div className="mb-10">
+      <div className="w-1/2 mx-auto my-10">
+        <Input label="" placeholder="Buscar..." />
       </div>
 
-      <span className="text-start text-2xl max-w-6xl m-auto bg-azulescuro flex justify-around py-5">
-        Receita
-      </span>
-      <div className="max-w-6xl m-auto bg-azulescuro flex justify-between">
-        <div className="flex flex-col justify-around text-lg">
-          <div className="p-2 font-medium">Nome:</div>
-          <div className="p-2 font-medium">Calorias Totais:</div>
-          <div className="p-2 font-medium">Pontos:</div>
-          <div className="p-2">
-            <span className="font-medium">Ingredientes</span>
-            <div className="flex flex-col">
-              {ingredientes.map((ingrediente, index) => (
-                <div key={index} className="p-2">
-                  {ingrediente.nome} : {ingrediente.quantidade}
-                </div>
-              ))}
+      <div className="flex flex-wrap gap-5 justify-center mt-4">
+        {receitas.map((itemReceita, indexReceita) => (
+          <div
+            key={indexReceita}
+            className="w-1/5 border rounded-lg drop-shadow-md p-4 cursor-pointer"
+          >
+            <h4 className="font-semibold text-lg border-b border-gray-100">
+              {itemReceita.nome}
+            </h4>
+            <div className="mt-3">
+              {itemReceita.ingredientes.map(
+                (itemIngredienteQuantidade, indexIngredienteQuantidade) => (
+                  <div
+                    key={indexIngredienteQuantidade}
+                    className="border rounded p-2 mb-2"
+                  >
+                    <div className="flex flex-col gap-1 text-sm">
+                      <p>
+                        <strong className="pr-1">Ingrediente:</strong>
+                        {itemIngredienteQuantidade.ingrediente.nome}
+                      </p>
+                      <p>
+                        <strong className="pr-1">Quantidade:</strong>
+                        {itemIngredienteQuantidade.quantidade}
+                      </p>
+                      <p>
+                        <strong className="pr-1">Calorias:</strong>
+                        {itemIngredienteQuantidade.ingrediente.calorias *
+                          itemIngredienteQuantidade.quantidade}
+                      </p>
+                      <p>
+                        <strong className="pr-1">Unidade:</strong>
+                        {itemIngredienteQuantidade.ingrediente.unidade}
+                      </p>
+                    </div>
+                  </div>
+                ),
+              )}
             </div>
           </div>
-        </div>
-        <div className="pr-5 pb-5">
-          <div className="h-60 w-60 bg-gray-500"></div>
-        </div>
+        ))}
       </div>
     </div>
   );

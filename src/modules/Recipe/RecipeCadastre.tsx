@@ -1,4 +1,4 @@
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import { Button, Input, Select } from '../../components';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
@@ -63,21 +63,24 @@ const RecipeCadastre: React.FC = () => {
 
   const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
     initialValues,
-    onSubmit: async (values) => {
+    onSubmit: async (values, formikHelpers: FormikHelpers<IInitialValues>) => {
       try {
         const { nome, ingredientes } = values;
         const newArray = [];
         for (let i = 0; ingredientes.length > i; i++) {
           const { id, ...rest } = ingredientes[i];
-          newArray.push({ ...rest });
+          newArray.push({ ...rest, ingredienteId: id });
         }
 
         const response = await fetch(`/api/receita`, {
           method: 'POST',
           body: JSON.stringify({ nome, ingredientes: newArray }),
         });
-        const data = await response.json();
-        toast.success(data.message);
+        const { ok, msg } = await response.json();
+        if (ok) {
+          toast.success(msg);
+          formikHelpers.resetForm({ values: initialValues });
+        } else toast.warning(msg);
       } catch (error) {
         toast.warning('Falha no cadastro');
       }
