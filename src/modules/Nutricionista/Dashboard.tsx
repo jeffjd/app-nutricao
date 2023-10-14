@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
 import DashboardRecipe from '../Recipe/DashboardRecipe';
+import Pacientes from './Pacientes';
 interface DashboardProps {
   auth: any;
 }
@@ -13,7 +14,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   const Context = () => {
     switch (nav) {
       case 0:
-        return <>pacientes...</>;
+         return <Pacientes auth={auth} />;;
       case 1:
         return <DashboardRecipe />;
       case 2:

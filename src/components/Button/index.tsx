@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       disabled={disabled}
-      className={`flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 shadow-sm transition ease-in-out border ${className} ${
+      className={`flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 shadow-sm transition ease-in-out border outline-none ${className} ${
         modelButton[disabled ? 'disabled' : model]
       }`}
       {...props}
