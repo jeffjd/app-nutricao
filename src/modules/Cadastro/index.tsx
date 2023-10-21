@@ -6,11 +6,7 @@ import { FaAngleLeft } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
 import { Input } from '@/components';
 
-interface CadastroProps {
-  type: string;
-}
-
-const Cadastro: React.FC<CadastroProps> = ({ type }) => {
+const Cadastro: React.FC = () => {
   const initialValues = {
     email: '',
     nome: '',
@@ -20,7 +16,7 @@ const Cadastro: React.FC<CadastroProps> = ({ type }) => {
     initialValues,
     onSubmit: async (values) => {
       try {
-        const response = await fetch(`api/create/${type}`, {
+        const response = await fetch(`/api/create/nutricionista`, {
           method: 'POST',
           body: JSON.stringify(values),
         });
@@ -39,7 +35,7 @@ const Cadastro: React.FC<CadastroProps> = ({ type }) => {
           <Link href="/">
             <FaAngleLeft size={16} className="absolute left-5 top-2" />
           </Link>
-          Cadastro {type}
+          Cadastro nutricionista
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">

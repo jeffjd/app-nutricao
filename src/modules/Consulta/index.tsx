@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { FaUser } from 'react-icons/fa6';
+import { FaAngleLeft, FaUser } from 'react-icons/fa6';
 import CriarConsulta from './CriarConsulta';
 import HistoricoConsulta from './HistoricoConsulta';
+import Link from 'next/link';
 
 interface DashboardProps {
   auth: any;
@@ -26,7 +27,13 @@ const Dashboard: React.FC<DashboardProps> = ({ auth, paciente }) => {
     <section>
       <div className="max-w-6xl m-auto bg-azulescuro">
         <div className="flex justify-around py-12">
-          <span className="flex align-middle text-3xl md:text-5xl">
+          <span className="flex justify-center gap-5 items-center text-3xl md:text-5xl">
+            <Link
+              href="/nutricionista"
+              className="bg-gray-400 rounded-full h-10 w-10 flex justify-center items-center"
+            >
+              <FaAngleLeft size={22} />
+            </Link>
             {auth.nome}
           </span>
           <div className="bg-gray-500 w-28 h-28 rounded-full md:w-36 md:h-36 flex justify-center items-center">

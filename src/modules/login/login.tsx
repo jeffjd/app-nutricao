@@ -92,21 +92,6 @@ const Login: React.FC = () => {
               Nutricionista
             </Button>
           </div>
-
-          <p className="mt-10 text-center text-sm text-gray-500">
-            <span className="mr-1">Não possui cadastro?</span>
-            {!type ? (
-              'Escolha o perfil para realizar o cadastro.'
-            ) : (
-              <Link
-                href={`/cadastro/${type}`}
-                className="font-semibold leading-6 text-azulescurobotao hover:text-azulclarobotao ml-1"
-              >
-                Cadastre-se
-              </Link>
-            )}
-          </p>
-
           <div>
             <Button
               type="submit"
