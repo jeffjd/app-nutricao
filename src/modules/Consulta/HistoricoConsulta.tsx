@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaTableList } from 'react-icons/fa6';
 import Spinner from '@/components/Spinner';
 import useSWR from 'swr';
 import fetcher from '@/lib/fetch';
 import { FaTimes } from 'react-icons/fa';
-import { Modal } from '@/components';
+import { Input, Modal } from '@/components';
+import { toast } from 'react-toastify';
+import { FormikHelpers, useFormik } from 'formik';
 
 interface IConsulta {
   altura: string;
@@ -22,9 +24,53 @@ interface HistoricoConsultaProps {
   paciente: any;
 }
 
+interface IInitialValues {
+  dataInicio: string;
+  duracao: string;
+  receitas: IReceita[];
+}
+
+interface IReceita {
+  id: string;
+  nome: string;
+  ingredientes: IIngredienteQuantidade[];
+}
+
+interface IIngrediente {
+  calorias: number;
+  id: string;
+  nome: string;
+  unidade: string;
+}
+
+interface IIngredienteQuantidade {
+  id: string;
+  receitaId: string;
+  ingredienteId: string;
+  quantidade: number;
+  ingrediente: IIngrediente;
+}
+
 const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
   const [nav, setNav] = useState<number>(0);
   const [open, setOpen] = useState<IConsulta | null>(null);
+  const [receitas, setReceitas] = useState<IReceita[]>([]);
+
+  useEffect(() => {
+    fetch('/api/receita')
+      .then((res) => res.json())
+      .then((data) => {
+        setReceitas(data);
+      });
+  }, []);
+
+  const somarCalorias = (ingredientes: IIngredienteQuantidade[]) => {
+    let soma: number = 0;
+    for (let i = 0; ingredientes.length > i; i++) {
+      soma += ingredientes[i].ingrediente.calorias * ingredientes[i].quantidade;
+    }
+    return soma;
+  };
 
   const { data, isLoading, mutate } = useSWR<IConsulta[]>(
     `/api/historicoConsulta?pacienteId=${paciente.id}`,
@@ -49,6 +95,32 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
   const selectedConsulta = (consulta: IConsulta) => {
     setOpen(consulta);
   };
+
+  const initialValues: IInitialValues = {
+    dataInicio: '',
+    duracao: '',
+    receitas: [],
+  };
+
+  const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
+    initialValues,
+    onSubmit: async (values, formikHelpers: FormikHelpers<IInitialValues>) => {
+      try {
+        const response = await fetch(`/api/consulta`, {
+          method: 'POST',
+          body: JSON.stringify({ ...values, pacienteId: paciente.id }),
+        });
+        const { ok, msg } = await response.json();
+        if (ok) {
+          toast.success(msg);
+          formikHelpers.resetForm({ values: initialValues });
+        } else toast.warning(msg);
+      } catch (error) {
+        toast.warning('Falha no cadastro');
+      } finally {
+      }
+    },
+  });
 
   return (
     <>
@@ -126,6 +198,61 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
               <strong className="mr-1">Data:</strong>
               {formatData(open?.createdAt as string)}
             </p>
+            <form className="space-y-6 mt-3" onSubmit={handleSubmit}>
+              <Input
+                label="Duração"
+                name="dracao"
+                type="number"
+                value={values.duracao}
+                onChange={handleChange}
+              />
+              <Input
+                label="Data de Início"
+                name="dataInicio"
+                type="date"
+                value={values.dataInicio}
+                onChange={handleChange}
+              />
+
+              <h4>
+                <strong>Receitas</strong>
+              </h4>
+
+              {receitas.map((itemReceita, indexReceita) => (
+                <div
+                  key={indexReceita}
+                  className="w-full border rounded-lg drop-shadow-md p-4 cursor-pointer"
+                >
+                  <h4 className="font-semibold text-lg border-b border-gray-100">
+                    {itemReceita.nome}
+                  </h4>
+                  <div className="mt-3">
+                    <div className="border rounded p-2 mb-2">
+                      <p className="pb-2">
+                        <strong className="pr-1">Ingrediente:</strong>
+                        {itemReceita.ingredientes.map(
+                          (
+                            IngredienteQuantidade,
+                            indexIngredienteQuantidade,
+                          ) => (
+                            <span
+                              key={indexIngredienteQuantidade}
+                              className="border rounded-md p-1 ml-2"
+                            >
+                              {IngredienteQuantidade.ingrediente.nome}
+                            </span>
+                          ),
+                        )}
+                      </p>
+                      <p>
+                        <strong className="pr-1">Calorias Totais:</strong>
+                        {somarCalorias(itemReceita.ingredientes)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </form>
           </div>
         </div>
       </Modal>
