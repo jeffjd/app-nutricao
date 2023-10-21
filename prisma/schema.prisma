@@ -25,6 +25,7 @@ model paciente {
   senha           String
   nutricionista   nutricionista? @relation(fields: [nutricionistaId], references: [id])
   nutricionistaId String?
+  consulta        consulta[]
 }
 
 
@@ -49,6 +50,17 @@ model ingredienteQuantidade {
   ingrediente   ingrediente? @relation(fields: [ingredienteId], references: [id])
   ingredienteId String?
   quantidade    Int
+}
+
+model consulta {
+  id         String    @id @default(uuid())
+  peso       String
+  altura     String
+  imc        String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  paciente   paciente? @relation(fields: [pacienteId], references: [id])
+  pacienteId String?
 }
 
 

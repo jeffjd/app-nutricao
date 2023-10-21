@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const ingredientes = await prisma.ingrediente.findMany();
     if (ingredientes) {
-      return NextResponse.json({ ok: true, data: ingredientes });
+      return NextResponse.json([...ingredientes]);
     }
 
     return NextResponse.json({ message: `Usuário não encontrado.` });

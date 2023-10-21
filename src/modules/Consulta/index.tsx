@@ -2,23 +2,23 @@
 
 import { useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
-import DashboardRecipe from '../Recipe/DashboardRecipe';
-import Pacientes from './Pacientes';
+import CriarConsulta from './CriarConsulta';
+import HistoricoConsulta from './HistoricoConsulta';
+
 interface DashboardProps {
   auth: any;
+  paciente: any;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
+const Dashboard: React.FC<DashboardProps> = ({ auth, paciente }) => {
   const [nav, setNav] = useState<number>(0);
 
   const Context = () => {
     switch (nav) {
       case 0:
-         return <Pacientes auth={auth} />;;
+        return <CriarConsulta paciente={paciente} nextStep={setNav} />;
       case 1:
-        return <DashboardRecipe />;
-      case 2:
-        return <>cadastro...</>;
+        return <HistoricoConsulta paciente={paciente} />;
     }
   };
 
@@ -34,31 +34,32 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
           </div>
         </div>
       </div>
-
-      <nav className="bg-verdeazulado max-w-6xl m-auto text-xl  flex cursor-pointer">
+      <div className="max-w-6xl m-auto bg-verdeazulado p-5">
+        <h6 className="mb-3">
+          <strong className="mr-1">Paciente:</strong>
+          {paciente.nome}
+        </h6>
+        <p>
+          <strong className="mr-1">Email:</strong>
+          {paciente.email}
+        </p>
+      </div>
+      <nav className="bg-verdeazulado max-w-6xl m-auto text-xl  flex cursor-pointer border-t border-azulescuro">
         <div
-          className={`w-1/3 text-center py-2 align-middle ${
+          className={`w-1/2 text-center py-2 align-middle ${
             nav === 0 ? 'bg-azulescuro' : ''
           }`}
           onClick={() => setNav(0)}
         >
-          Meus pacientes
+          Criar consulta
         </div>
         <div
-          className={`w-1/3 text-center py-2 align-middle ${
+          className={`w-1/2 text-center py-2 align-middle ${
             nav === 1 ? 'bg-azulescuro' : ''
           }`}
           onClick={() => setNav(1)}
         >
-          Minhas receitas
-        </div>
-        <div
-          className={`w-1/3 text-center py-2 align-middle ${
-            nav === 2 ? 'bg-azulescuro' : ''
-          }`}
-          onClick={() => setNav(2)}
-        >
-          Meu cadastro
+          Histórico consultas
         </div>
       </nav>
       <Context />

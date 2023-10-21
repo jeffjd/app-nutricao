@@ -6,6 +6,8 @@ import Spinner from '@/components/Spinner';
 import { Button, Input, Modal } from '@/components';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
+import fetcher from '@/lib/fetch';
+import { useRouter } from 'next/navigation';
 
 interface DashboardProps {
   auth: any;
@@ -19,8 +21,6 @@ interface IPaciente {
   senha: string;
 }
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
 
 const msgEmptyList: { [key: number]: string } = {
   0: 'Não existe pacientes novos.',
@@ -28,6 +28,7 @@ const msgEmptyList: { [key: number]: string } = {
 };
 
 const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
+  const router = useRouter();
   const [nav, setNav] = useState<number>(0);
   const [open, setOpen] = useState<IPaciente | null>(null);
 
@@ -58,7 +59,7 @@ const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
   };
 
   const handleAbrirDetalhePaciente = (paciente: IPaciente) => {
-    console.log(paciente);
+    router.push(`/nutricionista/consulta/${paciente.id}`);
   };
 
   return (

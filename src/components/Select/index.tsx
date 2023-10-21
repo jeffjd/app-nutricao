@@ -4,13 +4,13 @@ import { Input } from '..';
 interface AutoCompleteInputProps {
   name: string;
   options: any[];
-  values: any[];
+  value: any[];
   setFieldValue: (name: string, value: any) => void;
 }
 
 const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
   options,
-  values,
+  value,
   name,
   setFieldValue,
 }) => {
@@ -37,14 +37,14 @@ const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
 
   const selectOption = (option: string) => {
     setInputValue('');
-    const newArray = [...values, option];
+    const newArray = [...value, option];
     setFieldValue(name, newArray);
     setShowOptions(false);
     setFilteredOptions(options);
   };
 
   function searchItem(objA: any) {
-    return values.some((objB) => objB.id === objA.id);
+    return value.some((objB) => objB.id === objA.id);
   }
 
   return (
@@ -59,23 +59,24 @@ const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
       <div className="relative">
         {showOptions ? (
           <ul className="absolute z-10 bg-white w-full rounded-md drop-shadow">
-            {filteredOptions.map((option) => {
-              const hasSelect = searchItem(option);
+            {Array.isArray(filteredOptions) &&
+              filteredOptions.map((option: any) => {
+                const hasSelect = searchItem(option);
 
-              return (
-                <li
-                  key={option.id}
-                  onClick={() =>
-                    !hasSelect ? selectOption(option) : undefined
-                  }
-                  className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
-                    hasSelect ? 'bg-slate-300 hover:bg-slate-300' : ''
-                  }`}
-                >
-                  {option.nome}
-                </li>
-              );
-            })}
+                return (
+                  <li
+                    key={option.id}
+                    onClick={() =>
+                      !hasSelect ? selectOption(option) : undefined
+                    }
+                    className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
+                      hasSelect ? 'bg-slate-300 hover:bg-slate-300' : ''
+                    }`}
+                  >
+                    {option.nome}
+                  </li>
+                );
+              })}
           </ul>
         ) : null}
       </div>

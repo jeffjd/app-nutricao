@@ -1,32 +1,12 @@
 import { FormikHelpers, useFormik } from 'formik';
 import { Button, Input, Select } from '../../components';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
 import { FaAngleUp, FaTimes } from 'react-icons/fa';
 import { FaAngleDown } from 'react-icons/fa6';
+import useSWR from 'swr';
+import fetcher from '@/lib/fetch';
 
-// const ingredientes = [
-//   {
-//     id: '12asd23',
-//     nome: 'Coxa de Frango',
-//     calorias: 120,
-//     unidade: 1,
-//   },
-//   {
-//     id: '1232d23',
-//     nome: 'Feijão',
-//     calorias: 120,
-//     unidade: 1,
-//   },
-//   {
-//     id: 'asd23',
-//     nome: 'Arroz',
-//     calorias: 120,
-//     unidade: 1,
-//   },
-// ];
-
-interface IIngredients {
+interface IIngredient {
   calorias: number;
   id: string;
   nome: string;
@@ -36,30 +16,32 @@ interface IIngredients {
 
 interface IInitialValues {
   nome: string;
-  ingredientes: IIngredients[];
+  ingredientes: IIngredient[];
 }
 
 const RecipeCadastre: React.FC = () => {
-  const [optionsIngredients, setOptionsIngredientes] = useState<IIngredients[]>(
-    [],
-  );
-
   const initialValues: IInitialValues = {
     nome: '',
     ingredientes: [],
   };
 
-  useEffect(() => {
-    fetch('/api/ingredientes')
-      .then((res) => res.json())
-      .then((data) => {
-        const list = [];
-        for (let i = 0; data.data.length > i; i++) {
-          list.push({ ...data.data[i], quantidade: 0 });
-        }
-        setOptionsIngredientes(list);
-      });
-  }, []);
+  const useFetchIngredientes = () => {
+    const { data, isLoading } = useSWR<IIngredient[]>(
+      `/api/ingredientes`,
+      fetcher,
+    );
+
+    const list = [];
+    if (data) {
+      for (let i = 0; data.length > i; i++) {
+        list.push({ ...data[i], quantidade: 0 });
+      }
+    }
+
+    return { list, isLoading };
+  };
+
+  const { list, isLoading } = useFetchIngredientes();
 
   const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
     initialValues,
@@ -94,7 +76,7 @@ const RecipeCadastre: React.FC = () => {
           Cadastro de Receita
         </h2>
       </div>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-lg">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <Input
             label="Nome"
@@ -106,8 +88,8 @@ const RecipeCadastre: React.FC = () => {
 
           <Select
             name="ingredientes"
-            options={optionsIngredients}
-            values={values.ingredientes}
+            options={list as IIngredient[]}
+            value={values.ingredientes}
             setFieldValue={setFieldValue}
           />
           <ul className="border p-4 divide-y-2">
@@ -171,15 +153,6 @@ const RecipeCadastre: React.FC = () => {
               <div>Selecione os ingredientes para a receita.</div>
             )}
           </ul>
-
-          {/*
-          <select className="block w-full rounded-md border py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 outline-none">
-            {ingredientes.map((ingredient, index) => (
-              <option key={index} value={ingredient.id}>
-                {ingredient.nome}
-              </option>
-            ))}
-            </select>*/}
 
           <div>
             <Button type="submit">Cadastrar</Button>

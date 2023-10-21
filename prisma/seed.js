@@ -18,13 +18,13 @@ const load = async () => {
     const nutricionistas = await prisma.nutricionista.createMany({
       data: [
         {
-          nome: 'Nutricionistas01',
-          email: 'nutricionistas01@email.com',
+          nome: 'Nutricionista01',
+          email: 'nutricionista01@email.com',
           senha: '123123',
         },
         {
-          nome: 'Nutricionistas02',
-          email: 'nutricionistas02@email.com',
+          nome: 'Nutricionista02',
+          email: 'nutricionista02@email.com',
           senha: '123123',
         },
       ],
