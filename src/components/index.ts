@@ -5,7 +5,7 @@ import InputSearch from './InputSearch';
 import TagList from './TagList';
 import Card from './Card';
 import CardList from './CardList';
-import Select from './Select';
+import { AutoCompleteInput, Select } from './Select';
 import Modal from './Modal';
 
 export {
@@ -16,6 +16,7 @@ export {
   TagList,
   Card,
   CardList,
+  AutoCompleteInput,
   Select,
   Modal,
 };

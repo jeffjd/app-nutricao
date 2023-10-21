@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model nutricionista{
+model nutricionista {
   id       String     @id @default(uuid())
   nome     String
   email    String     @unique(map: "Nutricionista_email_key")
@@ -26,8 +23,19 @@ model paciente {
   nutricionista   nutricionista? @relation(fields: [nutricionistaId], references: [id])
   nutricionistaId String?
   consulta        consulta[]
+  anamneseId      anamnese?
 }
 
+model anamnese {
+  id         String    @id @default(uuid())
+  peso       String
+  altura     String
+  imc        String
+  meta       String
+  updatedAt  DateTime  @updatedAt
+  paciente   paciente? @relation(fields: [pacienteId], references: [id])
+  pacienteId String    @unique
+}
 
 model ingrediente {
   id                    String                  @id @default(uuid())
@@ -38,9 +46,10 @@ model ingrediente {
 }
 
 model receita {
-  id           String                  @id @default(uuid())
-  nome         String
-  ingredientes ingredienteQuantidade[]
+  id              String                  @id @default(uuid())
+  nome            String
+  ingredientes    ingredienteQuantidade[]
+  receitaConsulta receitaConsulta[]
 }
 
 model ingredienteQuantidade {
@@ -52,17 +61,26 @@ model ingredienteQuantidade {
   quantidade    Int
 }
 
-model consulta {
+model receitaConsulta {
   id         String    @id @default(uuid())
-  peso       String
-  altura     String
-  imc        String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  paciente   paciente? @relation(fields: [pacienteId], references: [id])
-  pacienteId String?
+  receita    receita?  @relation(fields: [receitaId], references: [id])
+  receitaId  String?
+  consulta   consulta? @relation(fields: [consultaId], references: [id])
+  consultaId String?
 }
 
+model consulta {
+  id              String            @id @default(uuid())
+  pesoIncial      Float
+  pesoFinal       Float
+  pesoObjetivo    Float
+  points          Int
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  paciente        paciente?         @relation(fields: [pacienteId], references: [id])
+  pacienteId      String?
+  receitaConsulta receitaConsulta[]
+}
 
 enum Unidade {
   colher

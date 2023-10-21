@@ -8,28 +8,21 @@ const load = async () => {
         { nome: 'Arroz', calorias: 40, unidade: 'colher' },
       ],
     });
-    console.log(ingredientes);
-    const pacientes = await prisma.paciente.createMany({
-      data: [
-        { nome: 'Paciente01', email: 'paciente01@email.com', senha: '123123' },
-        { nome: 'Paciente02', email: 'paciente02@email.com', senha: '123123' },
-      ],
-    });
     const nutricionistas = await prisma.nutricionista.createMany({
       data: [
         {
-          nome: 'Nutricionista01',
-          email: 'nutricionista01@email.com',
+          nome: 'Nutricionista 01',
+          email: 'nutri01@email.com',
           senha: '123123',
         },
         {
-          nome: 'Nutricionista02',
-          email: 'nutricionista02@email.com',
+          nome: 'Nutricionista 02',
+          email: 'nutri@email.com',
           senha: '123123',
         },
       ],
     });
-    console.log(ingredientes, pacientes, nutricionistas);
+    console.log(ingredientes, nutricionistas);
   } catch (e) {
     console.error(e);
     process.exit(1);

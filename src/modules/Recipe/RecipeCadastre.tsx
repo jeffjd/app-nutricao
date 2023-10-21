@@ -1,5 +1,7 @@
+'use client';
+
 import { FormikHelpers, useFormik } from 'formik';
-import { Button, Input, Select } from '../../components';
+import { Button, Input, AutoCompleteInput } from '../../components';
 import { toast } from 'react-toastify';
 import { FaAngleUp, FaTimes } from 'react-icons/fa';
 import { FaAngleDown } from 'react-icons/fa6';
@@ -86,12 +88,13 @@ const RecipeCadastre: React.FC = () => {
             onChange={handleChange}
           />
 
-          <Select
+          <AutoCompleteInput
             name="ingredientes"
             options={list as IIngredient[]}
             value={values.ingredientes}
             setFieldValue={setFieldValue}
           />
+
           <ul className="border p-4 divide-y-2">
             {values.ingredientes.length > 0 ? (
               values.ingredientes.map((ingrediente, index) => (
