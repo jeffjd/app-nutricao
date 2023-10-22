@@ -28,3 +28,9 @@ export const timestampData = (num: number): string => {
   return dataParaConsulta.toISOString();
 
 };
+
+export function converterStringParaData(stringData: any) {
+  let partesData = stringData.split('/');
+  // Formato: DD/MM/YYYY
+  return new Date(partesData[2], partesData[1] - 1, partesData[0]);
+}

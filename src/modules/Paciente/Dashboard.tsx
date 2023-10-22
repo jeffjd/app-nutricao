@@ -3,8 +3,12 @@
 import { Button } from '@/components';
 import Spinner from '@/components/Spinner';
 import fetcher from '@/lib/fetch';
-import { formatData, timestampData } from '@/util/formatDate';
-import { useState } from 'react';
+import {
+  converterStringParaData,
+  formatData,
+  timestampData,
+} from '@/util/formatDate';
+import { useEffect, useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
 import useSWR from 'swr';
@@ -15,10 +19,21 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   const [loading, setLoading] = useState<boolean>(false);
+
+  let dataAtual = new Date();
+  let novaData = new Date(dataAtual.getTime() + 86400000);
+  let novaDataISO = novaData.toISOString();
+
+  // const dateNow = formatData(novaDataISO);
+  const dateNow = formatData(new Date().toISOString());
   const [select, setSelect] = useState<any[]>([]);
 
-  const { data, isLoading, mutate } = useSWR(
-    `/api/historicoConsulta?pacienteId=${auth.id}`,
+  const {
+    data: consulta,
+    isLoading: isLoadingConsulta,
+    mutate: consultaMutate,
+  } = useSWR(
+    `/api/historicoConsulta?pacienteId=${auth.id}&status=true`,
     fetcher,
   );
 
@@ -27,9 +42,42 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
     isLoading: isLoadingReceitaConsumida,
     mutate: receitaConsumidaMutate,
   } = useSWR(
-    data && data[0] ? `/api/confirmaConsumo?consultaId=${data[0].id}` : null,
+    consulta && consulta[0]
+      ? `/api/confirmaConsumo?consultaId=${consulta[0].id}`
+      : null,
     fetcher,
   );
+
+  useEffect(() => {
+    if (consulta) {
+      const handleCloseConsultaPaciente = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `/api/consulta?consultaId=${consulta[0].id}&close=true`,
+          );
+          const { ok, msg } = await response.json();
+          if (ok) {
+            toast.success(msg);
+            consultaMutate();
+          } else toast.warning(msg);
+        } catch (error) {
+          toast.warning('Erro');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      let data1 = converterStringParaData(dateNow);
+      let data2 = converterStringParaData(
+        formatData(timestampData(consulta[0]?.retorno)),
+      );
+
+      if (data1 >= data2) {
+        handleCloseConsultaPaciente();
+      }
+    }
+  }, [consulta]);
 
   const handleSelectReceita = (obj: any) => {
     const index = select.findIndex((item: any) => item === obj);
@@ -47,11 +95,13 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
     try {
       const response = await fetch(`/api/confirmaConsumo`, {
         method: 'POST',
-        body: JSON.stringify({ select }),
+        body: JSON.stringify({ select, dateNow }),
       });
       const { ok, msg } = await response.json();
       if (ok) {
         toast.success(msg);
+        consultaMutate();
+        receitaConsumidaMutate();
       } else toast.warning(msg);
     } catch (error) {
       toast.warning('Erro');
@@ -85,8 +135,8 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
         </div>
       </div>
       <div>
-        {isLoading ? <Spinner /> : null}
-        {data && data[0] ? (
+        {isLoadingConsulta || isLoadingReceitaConsumida ? <Spinner /> : null}
+        {consulta && consulta[0] ? (
           <>
             <h3 className="text-xl text-center my-4 font-bold">
               Detalhe da sua consulta
@@ -94,15 +144,18 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
             <div className="pl-5">
               <p>
                 <strong className="mr-1">Data:</strong>
-                {formatData(data[0].createdAt)}
+                {formatData(consulta[0].createdAt)}
               </p>
               <p>
                 <strong className="mr-1">Retorno:</strong>
-                {formatData(timestampData(data[0].retorno))}, ({data[0].retorno}
-                ) Dias
+                {formatData(timestampData(consulta[0].retorno))}, (
+                {consulta[0].retorno}) Dias
               </p>
             </div>
             <hr className="mt-3" />
+            <h5 className="mt-2">
+              Data de hoje: <strong>{dateNow}</strong>
+            </h5>
             <div className="mx-4 my-4">
               <h4 className="font-bold">Dieta</h4>
               <p>
@@ -110,36 +163,29 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
                 desfeita.
               </p>
             </div>
-            {data[0].receitaConsulta.map((item: any, index: number) => {
-              // console.log(item);
+            {consulta[0].receitaConsulta.map((item: any, index: number) => {
+              const consumido = receitaConsumida?.filter(
+                (i: any, index: number) => {
+                  const hasEqualId = i.receitaConsultaId === item.id;
 
-              const test = receitaConsumida?.filter((i: any, index: number) => {
-                const hasEqualId = i.receitaConsultaId === item.id;
-                if (hasEqualId) {
-                  const data1 = new Date();
-                  const data2 = new Date(i.createdAt);
-
-                  const mesDia1 = {
-                    mes: data1.getUTCMonth() + 1,
-                    dia: data1.getUTCDate(),
-                  };
-                  const mesDia2 = {
-                    mes: data2.getUTCMonth() + 1,
-                    dia: data2.getUTCDate(),
-                  };
-
-                  return (
-                    mesDia1.mes === mesDia2.mes && mesDia1.dia === mesDia2.dia
-                  );
-                }
-              });
-              console.log(test);
+                  return hasEqualId && i.createdAt === dateNow;
+                },
+              );
 
               return (
-                <div key={index} className="flex border p-3 mx-4 gap-10">
+                <div
+                  key={index}
+                  className={`flex border p-3 mx-4 gap-10 ${
+                    consumido?.length > 0 ? 'bg-slate-100' : ''
+                  }`}
+                >
                   <input
                     type="checkbox"
-                    checked={select.filter((i) => i === item).length > 0}
+                    disabled={consumido?.length > 0}
+                    checked={
+                      select.filter((i) => i === item).length > 0 ||
+                      consumido?.length > 0
+                    }
                     onChange={() => handleSelectReceita(item)}
                   />
                   <div className="flex flex-col">
@@ -188,7 +234,11 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
               </div>
             ) : null}
           </>
-        ) : null}
+        ) : (
+          <div className="text-center font-bold text-2xl mt-10">
+            <h3>Você não tem uma acompanhamento no momento</h3>
+          </div>
+        )}
       </div>
     </section>
   );

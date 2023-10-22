@@ -19,11 +19,11 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const hasTrue = status
-      ? consultas.filter((item) => item.status === true)
-      : consultas;
+    const consultaAberta = consultas.filter((item) => item.status === true);
 
-    return NextResponse.json([...hasTrue]);
+    return NextResponse.json(
+      consultaAberta.length > 0 ? [...consultaAberta] : null,
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: `Ocorreu um erro.` });

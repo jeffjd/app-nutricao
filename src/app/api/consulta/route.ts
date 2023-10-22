@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../lib/prisma';
 import { format } from 'date-fns-tz';
 
@@ -48,5 +48,28 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: `Ocorreu um erro durante a criação da consulta.`,
     });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const close = request.nextUrl.searchParams.get('close');
+  const consultaId = request.nextUrl.searchParams.get('consultaId');
+
+  try {
+    if (close && consultaId) {
+      await prisma.consulta.update({
+        where: { id: consultaId },
+        data: { status: false },
+      });
+
+      return NextResponse.json({
+        ok: true,
+        msg: 'Seu acompanhamento foi encerrado, favor retornar ao consultorio!',
+      });
+    }
+    return NextResponse.json({ ok: false, msg: `Ocorreu um erro.1` });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ ok: false, msg: `Ocorreu um erro.2` });
   }
 }

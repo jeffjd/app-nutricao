@@ -3,20 +3,13 @@ import prisma from '../../../lib/prisma';
 import { format } from 'date-fns-tz';
 
 export async function POST(request: Request) {
-  const { select } = await request.json();
-
-  const dataHoraBrasil = new Date();
-  dataHoraBrasil.setUTCHours(dataHoraBrasil.getUTCHours() - 3);
-
-  const dataHoraString = format(dataHoraBrasil, `yyyy-MM-dd'T'HH:mm:ssXXX`, {
-    timeZone: 'America/Sao_Paulo',
-  });
+  const { select, dateNow } = await request.json();
 
   const arrayConsumo = [];
   for (let i = 0; select.length > i; i++) {
     arrayConsumo.push({
       receitaConsultaId: select[i].id,
-      createdAt: dataHoraString,
+      createdAt: dateNow,
     });
   }
 
@@ -27,7 +20,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      msg: 'Consumo registrado',
+      msg: 'Consumo de hoje degistrado registrado',
     });
   } catch (error) {
     console.log(error);
@@ -42,12 +35,17 @@ export async function GET(request: NextRequest) {
 
   try {
     if (consultaId) {
-      const receitaConsulta = await prisma.receitaConsulta.findFirst({
+      const receitaConsulta = await prisma.receitaConsulta.findMany({
         where: { consultaId },
         include: { receitaConsumida: true },
       });
 
-      return NextResponse.json([...(receitaConsulta?.receitaConsumida || [])]);
+      let newArray = [];
+      for (let i = 0; receitaConsulta.length > i; i++) {
+        newArray.push(...receitaConsulta[i].receitaConsumida);
+      }
+
+      return NextResponse.json(newArray);
     }
     return NextResponse.json({ ok: false, msg: `Ocorreu um erro.1` });
   } catch (error) {

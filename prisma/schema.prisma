@@ -89,7 +89,7 @@ model receitaConsumida {
   id                String           @id @default(uuid())
   receitaConsulta   receitaConsulta? @relation(fields: [receitaConsultaId], references: [id])
   receitaConsultaId String
-  createdAt         DateTime         @default(now())
+  createdAt         String
 }
 
 enum Unidade {
