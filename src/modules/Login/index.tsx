@@ -13,7 +13,7 @@ export type TType = 'paciente' | 'nutricionista';
 const Login: React.FC = () => {
   const router = useRouter();
   const { dispatch } = useAuth();
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [type, setType] = useState<TType | null>(null);
 
   const initialValues = {
@@ -23,6 +23,7 @@ const Login: React.FC = () => {
   const { values, handleSubmit, handleChange } = useFormik({
     initialValues,
     onSubmit: async (values) => {
+      setLoading(true);
       try {
         const response = await fetch(`/api/login/${type}`, {
           method: 'POST',
@@ -36,6 +37,8 @@ const Login: React.FC = () => {
         toast.info(data.message);
       } catch (error) {
         toast.warning('Falha no login');
+      } finally {
+        setLoading(false);
       }
     },
   });

@@ -6,6 +6,11 @@ const load = async () => {
       data: [
         { nome: 'Feijão', calorias: 42, unidade: 'colher' },
         { nome: 'Arroz', calorias: 40, unidade: 'colher' },
+        { nome: 'Pão de forma', calorias: 40, unidade: 'porcao' },
+        { nome: 'Café', calorias: 40, unidade: 'mililitros' },
+        { nome: 'Banana', calorias: 40, unidade: 'porcao' },
+        { nome: 'Frango Grelhado', calorias: 40, unidade: 'porcao' },
+        { nome: 'Carne Assada', calorias: 40, unidade: 'porcao' },
       ],
     });
     const nutricionistas = await prisma.nutricionista.createMany({

@@ -7,6 +7,15 @@ export async function GET(request: NextRequest) {
   try {
     const consultas = await prisma.consulta.findMany({
       where: { pacienteId },
+      include: {
+        receitaConsulta: {
+          include: {
+            receita: {
+              include: { ingredientes: { include: { ingrediente: true } } },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json([...consultas]);

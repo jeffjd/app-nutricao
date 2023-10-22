@@ -3,7 +3,8 @@ import prisma from '../../../lib/prisma';
 import { format } from 'date-fns-tz';
 
 export async function POST(request: Request) {
-  const { peso, altura, imc, pacienteId } = await request.json();
+  const { pesoInicial, pesoObjetivo, retorno, pacienteId, receitas } =
+    await request.json();
 
   const dataHoraBrasil = new Date();
   dataHoraBrasil.setUTCHours(dataHoraBrasil.getUTCHours() - 3);
@@ -13,18 +14,35 @@ export async function POST(request: Request) {
   });
 
   try {
-    await prisma.consulta.create({
+    const consulta = await prisma.consulta.create({
       data: {
-        altura,
-        imc,
-        peso,
+        pesoInicial: parseFloat(pesoInicial),
+        pesoObjetivo: parseFloat(pesoObjetivo),
+        retorno: retorno.value,
         pacienteId,
         createdAt: dataHoraString,
         updatedAt: dataHoraString,
       },
     });
 
-    return NextResponse.json({ ok: true, msg: 'Consulta criada com sucesso!' });
+    const arrayReceita = [];
+    for (let i = 0; receitas.length > i; i++) {
+      arrayReceita.push({ receitaId: receitas[i].id, consultaId: consulta.id });
+    }
+    if (arrayReceita.length > 0) {
+      await prisma.receitaConsulta.createMany({
+        data: arrayReceita,
+      });
+    } else {
+      return NextResponse.json({
+        ok: false,
+        msg: 'Erro ao criar a consulta',
+      });
+    }
+    return NextResponse.json({
+      ok: true,
+      msg: 'Consulta criada com sucesso!',
+    });
   } catch (error) {
     console.log(error);
     return NextResponse.json({

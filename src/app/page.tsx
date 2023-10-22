@@ -1,4 +1,4 @@
-import Login from '@/modules/Login/Login';
+import Login from '@/modules/Login';
 
 export default function HomeScreen() {
   return (

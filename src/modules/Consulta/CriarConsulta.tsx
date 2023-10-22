@@ -10,6 +10,7 @@ import { IOptions, IReceita } from '@/helper/interface';
 import useSWR from 'swr';
 import fetcher from '@/lib/fetch';
 import { FaTimes } from 'react-icons/fa';
+import { formatData, timestampData } from '@/util/formatDate';
 
 const optionsRetorno = [
   { label: '30 dias', value: 30 },
@@ -20,12 +21,16 @@ const optionsRetorno = [
 interface IInitialValues {
   retorno: IOptions | null;
   receitas: IReceita[];
+  pesoObjetivo: string;
+  pesoInicial: string;
 }
 
 interface CriarConsultaProps {
   paciente: any;
   nextStep: Dispatch<SetStateAction<number>>;
 }
+
+let today = new Date();
 
 const CriarConsulta: React.FC<CriarConsultaProps> = ({
   paciente,
@@ -34,6 +39,8 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const initialValues: IInitialValues = {
     retorno: null,
+    pesoObjetivo: '',
+    pesoInicial: '',
     receitas: [],
   };
 
@@ -55,7 +62,6 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
         if (ok) {
           toast.success(msg);
           formikHelpers.resetForm({ values: initialValues });
-
           nextStep(1);
         } else toast.warning(msg);
       } catch (error) {
@@ -77,6 +83,22 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-lg">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <Input
+              label="Peso Inicial"
+              name="pesoInicial"
+              type="text"
+              value={values.pesoInicial}
+              placeholder="Colocar peso que deseja alcançar..."
+              onChange={handleChange}
+            />
+            <Input
+              label="Peso Desejado"
+              name="pesoObjetivo"
+              type="text"
+              value={values.pesoObjetivo}
+              placeholder="Colocar peso que deseja alcançar..."
+              onChange={handleChange}
+            />
             <Select
               label="Próxima consulta"
               name="retorno"
@@ -84,6 +106,14 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
               value={values.retorno}
               setFieldValue={setFieldValue}
             />
+            {values.retorno ? (
+              <span>
+                O retorno ficara marcado para o dia:
+                <strong className="mr-1">
+                  {formatData(timestampData(values.retorno.value as number))}
+                </strong>
+              </span>
+            ) : null}
 
             <AutoCompleteInput
               name="receitas"

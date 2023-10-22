@@ -71,10 +71,11 @@ model receitaConsulta {
 
 model consulta {
   id              String            @id @default(uuid())
-  pesoIncial      Float
-  pesoFinal       Float
+  pesoInicial     Float
+  pesoFinal       Float?
   pesoObjetivo    Float
-  points          Int
+  retorno         Int
+  points          Int?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   paciente        paciente?         @relation(fields: [pacienteId], references: [id])

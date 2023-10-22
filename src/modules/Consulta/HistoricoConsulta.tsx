@@ -53,7 +53,7 @@ interface IIngredienteQuantidade {
 }
 
 const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
-  const [nav, setNav] = useState<number>(0);
+
   const [open, setOpen] = useState<IConsulta | null>(null);
 
   const somarCalorias = (ingredientes: IIngredienteQuantidade[]) => {
