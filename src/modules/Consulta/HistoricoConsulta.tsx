@@ -9,16 +9,20 @@ import { FaTimes } from 'react-icons/fa';
 import { Input, Modal } from '@/components';
 import { toast } from 'react-toastify';
 import { FormikHelpers, useFormik } from 'formik';
-import { formatData } from '@/util/formatDate';
+import { formatData, timestampData } from '@/util/formatDate';
 
 interface IConsulta {
-  altura: string;
   createdAt: string;
   id: string;
-  imc: string;
   pacienteId: string;
-  peso: string;
   updatedAt: string;
+  pesoFinal: number | null;
+  pesoInicial: number;
+  pesoObjetivo: number;
+  points: number | null;
+  retorno: number;
+  status: boolean;
+  receitaConsulta: [];
 }
 
 interface HistoricoConsultaProps {
@@ -53,7 +57,6 @@ interface IIngredienteQuantidade {
 }
 
 const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
-
   const [open, setOpen] = useState<IConsulta | null>(null);
 
   const somarCalorias = (ingredientes: IIngredienteQuantidade[]) => {
@@ -129,20 +132,20 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
                   </div>
                   <div>
                     <p>
-                      <strong className="mr-1">Peso:</strong>
-                      {item.peso} kg
+                      <strong className="mr-1">Peso inicial:</strong>
+                      {item.pesoInicial} kg
                     </p>
                     <p>
-                      <strong className="mr-1">Altura:</strong>
-                      {item.altura} m
+                      <strong className="mr-1">Objetivo peso:</strong>
+                      {item.pesoObjetivo} kg
                     </p>
                     <p>
-                      <strong className="mr-1">IMC:</strong>
-                      {item.imc}
-                    </p>
-                    <p>
-                      <strong className="mr-1">Data:</strong>
+                      <strong className="mr-1">Atendimento:</strong>
                       {formatData(item.createdAt)}
+                    </p>
+                    <p>
+                      <strong className="mr-1">Retorno:</strong>
+                      {formatData(timestampData(item.retorno))}
                     </p>
                   </div>
                 </div>
@@ -157,25 +160,34 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
           </div>
         )}
       </section>
-      <Modal
+      {/* <Modal
         title="Gerenciar consulta"
         isOpen={!!open}
         onClose={() => setOpen(null)}
       >
         <div>
           <div>
-            <p>
-              <strong className="mr-1">Peso:</strong>
-              {open?.peso} kg
-            </p>
-            <p>
-              <strong className="mr-1">Altura:</strong>
-              {open?.altura} m
-            </p>
-            <p>
-              <strong className="mr-1">IMC:</strong>
-              {open?.imc}
-            </p>
+            <div>
+              <p>
+                <strong className="mr-1">Peso inicial:</strong>
+                {open?.pesoInicial} kg
+              </p>
+              <p>
+                <strong className="mr-1">Objetivo peso:</strong>
+                {open?.pesoObjetivo} kg
+              </p>
+
+              <p>
+                <strong className="mr-1">Data:</strong>
+                {formatData(open?.createdAt as string)}
+              </p>
+              <p>
+                O retorno ficara marcado para o dia:
+                <strong className="mr-1">
+                  {formatData(timestampData(open?.retorno as number))}
+                </strong>
+              </p>
+            </div>
             <p>
               <strong className="mr-1">Data:</strong>
               {formatData(open?.createdAt as string)}
@@ -238,7 +250,7 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
             </form>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

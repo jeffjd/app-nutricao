@@ -44,10 +44,7 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
     receitas: [],
   };
 
-  const { data, isLoading, mutate } = useSWR<IReceita[]>(
-    `/api/receita`,
-    fetcher,
-  );
+  const { data, mutate } = useSWR<IReceita[]>(`/api/receita`, fetcher);
 
   const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
     initialValues,

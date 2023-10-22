@@ -62,11 +62,12 @@ model ingredienteQuantidade {
 }
 
 model receitaConsulta {
-  id         String    @id @default(uuid())
-  receita    receita?  @relation(fields: [receitaId], references: [id])
-  receitaId  String?
-  consulta   consulta? @relation(fields: [consultaId], references: [id])
-  consultaId String?
+  id               String             @id @default(uuid())
+  receita          receita?           @relation(fields: [receitaId], references: [id])
+  receitaId        String?
+  consulta         consulta?          @relation(fields: [consultaId], references: [id])
+  consultaId       String?
+  receitaConsumida receitaConsumida[]
 }
 
 model consulta {
@@ -76,11 +77,19 @@ model consulta {
   pesoObjetivo    Float
   retorno         Int
   points          Int?
+  status          Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   paciente        paciente?         @relation(fields: [pacienteId], references: [id])
   pacienteId      String?
   receitaConsulta receitaConsulta[]
+}
+
+model receitaConsumida {
+  id                String           @id @default(uuid())
+  receitaConsulta   receitaConsulta? @relation(fields: [receitaConsultaId], references: [id])
+  receitaConsultaId String
+  createdAt         DateTime         @default(now())
 }
 
 enum Unidade {

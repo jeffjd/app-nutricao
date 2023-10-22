@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import prisma from '../../../lib/prisma';
 
 export async function GET(request: NextRequest) {
   const pacienteId = request.nextUrl.searchParams.get('pacienteId');
+  const status = request.nextUrl.searchParams.get('status');
 
   try {
     const consultas = await prisma.consulta.findMany({
@@ -18,8 +19,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json([...consultas]);
+    const hasTrue = status
+      ? consultas.filter((item) => item.status === true)
+      : consultas;
+
+    return NextResponse.json([...hasTrue]);
   } catch (error) {
-    return NextResponse.json({ message: `Ocorreu um erro durante o login.` });
+    console.log(error);
+    return NextResponse.json({ message: `Ocorreu um erro.` });
   }
 }
