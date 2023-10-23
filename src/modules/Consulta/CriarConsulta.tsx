@@ -28,12 +28,14 @@ interface IInitialValues {
 interface CriarConsultaProps {
   paciente: any;
   nextStep: Dispatch<SetStateAction<number>>;
+  nutricionistaId: string;
 }
 
 let today = new Date();
 
 const CriarConsulta: React.FC<CriarConsultaProps> = ({
   paciente,
+  nutricionistaId,
   nextStep,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -44,7 +46,10 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
     receitas: [],
   };
 
-  const { data, mutate } = useSWR<IReceita[]>(`/api/receita`, fetcher);
+  const { data, isLoading, mutate } = useSWR<IReceita[]>(
+    `/api/receita?nutricionistaId=${nutricionistaId}`,
+    fetcher,
+  );
 
   const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
     initialValues,
@@ -85,8 +90,9 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
               name="pesoInicial"
               type="text"
               value={values.pesoInicial}
-              placeholder="Colocar peso que deseja alcançar..."
+              placeholder="Colocar peso atual do paciente..."
               onChange={handleChange}
+              icon="KG"
             />
             <Input
               label="Peso Desejado"
@@ -95,6 +101,7 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
               value={values.pesoObjetivo}
               placeholder="Colocar peso que deseja alcançar..."
               onChange={handleChange}
+              icon="KG"
             />
             <Select
               label="Próxima consulta"
@@ -114,6 +121,7 @@ const CriarConsulta: React.FC<CriarConsultaProps> = ({
 
             <AutoCompleteInput
               name="receitas"
+              label="Receitas"
               options={data as IReceita[]}
               value={values.receitas}
               setFieldValue={setFieldValue}

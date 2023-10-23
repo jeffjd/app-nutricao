@@ -21,7 +21,11 @@ interface IInitialValues {
   ingredientes: IIngredient[];
 }
 
-const RecipeCadastre: React.FC = () => {
+interface IRecipeCadastre {
+  nutricionistaId: string;
+}
+
+const RecipeCadastre: React.FC<IRecipeCadastre> = ({ nutricionistaId }) => {
   const initialValues: IInitialValues = {
     nome: '',
     ingredientes: [],
@@ -58,7 +62,7 @@ const RecipeCadastre: React.FC = () => {
 
         const response = await fetch(`/api/receita`, {
           method: 'POST',
-          body: JSON.stringify({ nome, ingredientes: newArray }),
+          body: JSON.stringify({ nome, ingredientes: newArray, nutricionistaId }),
         });
         const { ok, msg } = await response.json();
         if (ok) {
@@ -90,6 +94,7 @@ const RecipeCadastre: React.FC = () => {
 
           <AutoCompleteInput
             name="ingredientes"
+            label="ingredientes"
             options={list as IIngredient[]}
             value={values.ingredientes}
             setFieldValue={setFieldValue}

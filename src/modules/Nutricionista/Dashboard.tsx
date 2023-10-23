@@ -16,7 +16,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
       case 0:
          return <Pacientes auth={auth} />;;
       case 1:
-        return <DashboardRecipe />;
+        return <DashboardRecipe auth={auth} />;
       case 2:
         return <>cadastro...</>;
     }

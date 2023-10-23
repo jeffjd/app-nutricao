@@ -23,7 +23,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth, paciente }) => {
   const Context = () => {
     switch (nav) {
       case 0:
-        return <CriarConsulta paciente={paciente} nextStep={setNav} />;
+        return <CriarConsulta paciente={paciente} nextStep={setNav} nutricionistaId={auth.id}/>;
       case 1:
         return <HistoricoConsulta paciente={paciente} />;
     }

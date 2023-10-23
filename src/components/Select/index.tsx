@@ -10,6 +10,7 @@ interface AutoCompleteInputProps {
   name: string;
   options: any[];
   value: any[];
+  label: string;
   setFieldValue: (name: string, value: any) => void;
 }
 
@@ -25,6 +26,7 @@ const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
   options,
   value,
   name,
+  label,
   setFieldValue,
 }) => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -62,9 +64,9 @@ const AutoCompleteInput: React.FC<AutoCompleteInputProps> = ({
   return (
     <div onMouseLeave={() => setShowOptions(false)}>
       <Input
-        label="Ingredientes"
+        label={label}
         type="text"
-        placeholder="Procurar ingrediente..."
+        placeholder={`Procurar ${label.toLowerCase()}...`}
         value={inputValue}
         onClick={() => setShowOptions(true)}
         onChange={handleInputChange}

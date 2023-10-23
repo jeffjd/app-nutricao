@@ -13,6 +13,7 @@ model nutricionista {
   email    String     @unique(map: "Nutricionista_email_key")
   senha    String
   paciente paciente[]
+  receita  receita[]
 }
 
 model paciente {
@@ -50,6 +51,8 @@ model receita {
   nome            String
   ingredientes    ingredienteQuantidade[]
   receitaConsulta receitaConsulta[]
+  nutricionista   nutricionista?          @relation(fields: [nutricionistaId], references: [id])
+  nutricionistaId String?
 }
 
 model ingredienteQuantidade {

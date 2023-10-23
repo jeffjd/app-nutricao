@@ -2,15 +2,19 @@ import { useState } from 'react';
 import RecipeShowcase from './RecipeShowcase';
 import RecipeCadastre from './RecipeCadastre';
 
-const DashboardRecipe: React.FC = () => {
+interface IDashboardProps {
+  auth: any;
+}
+
+const DashboardRecipe: React.FC<IDashboardProps> = ({ auth }) => {
   const [nav, setNav] = useState<number>(0);
 
   const Context = () => {
     switch (nav) {
       case 0:
-        return <RecipeShowcase />;
+        return <RecipeShowcase nutricionistaId={auth.id}/>;
       case 1:
-        return <RecipeCadastre />;
+        return <RecipeCadastre nutricionistaId={auth.id} />;
     }
   };
   return (

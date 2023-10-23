@@ -24,8 +24,8 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   let novaData = new Date(dataAtual.getTime() + 86400000);
   let novaDataISO = novaData.toISOString();
 
-  // const dateNow = formatData(novaDataISO);
-  const dateNow = formatData(new Date().toISOString());
+  //const dateNow = formatData(novaDataISO); //dia posterior
+  const dateNow = formatData(new Date().toISOString()); //dia de hoje
   const [select, setSelect] = useState<any[]>([]);
 
   const {
@@ -100,6 +100,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
       const { ok, msg } = await response.json();
       if (ok) {
         toast.success(msg);
+        setSelect([]);
         consultaMutate();
         receitaConsumidaMutate();
       } else toast.warning(msg);
