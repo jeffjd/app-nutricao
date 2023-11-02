@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FaUser } from 'react-icons/fa6';
 import DashboardRecipe from '../Recipe/DashboardRecipe';
 import Pacientes from './Pacientes';
+
 interface DashboardProps {
   auth: any;
 }
@@ -14,7 +15,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   const Context = () => {
     switch (nav) {
       case 0:
-         return <Pacientes auth={auth} />;;
+        return <Pacientes auth={auth} />;
       case 1:
         return <DashboardRecipe auth={auth} />;
       case 2:
@@ -25,12 +26,12 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   return (
     <section>
       <div className="max-w-6xl m-auto bg-azulescuro">
-        <div className="flex justify-around py-12">
-          <span className="flex align-middle text-3xl md:text-5xl">
+        <div className="flex justify-start py-1">
+          <span className="flex align-middle text-2xl pl-10 pr-4">
             {auth.nome}
           </span>
-          <div className="bg-gray-500 w-28 h-28 rounded-full md:w-36 md:h-36 flex justify-center items-center">
-            <FaUser size={40} className="text-white" />
+          <div className="bg-gray-500 w-8 h-8 rounded-full flex justify-center items-center">
+            <FaUser size={10} className="text-white" />
           </div>
         </div>
       </div>
@@ -50,7 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
           }`}
           onClick={() => setNav(1)}
         >
-          Minhas receitas
+          Refeições Cadastradas
         </div>
         <div
           className={`w-1/3 text-center py-2 align-middle ${

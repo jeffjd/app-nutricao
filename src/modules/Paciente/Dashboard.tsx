@@ -114,12 +114,12 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   return (
     <section className="pb-10">
       <div className="max-w-6xl m-auto bg-azulescuro">
-        <div className="flex justify-around py-12">
-          <span className="flex align-middle text-3xl md:text-5xl">
+        <div className="flex justify-start py-1">
+          <span className="flex align-middle text-2xl pl-10 pr-4">
             {auth.nome}
           </span>
-          <div className="bg-gray-500 w-28 h-28 rounded-full md:w-36 md:h-36 flex justify-center items-center">
-            <FaUser size={40} className="text-white" />
+          <div className="bg-gray-500 w-8 h-8 rounded-full flex justify-center items-center">
+            <FaUser size={10} className="text-white" />
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
       <div>
         {isLoadingConsulta || isLoadingReceitaConsumida ? <Spinner /> : null}
         {consulta && consulta[0] ? (
-          <>
+          <div>
             <h3 className="text-xl text-center my-4 font-bold">
               Detalhe da sua consulta
             </h3>
@@ -234,7 +234,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
                 </Button>
               </div>
             ) : null}
-          </>
+          </div>
         ) : (
           <div className="text-center font-bold text-2xl mt-10">
             <h3>Você não tem uma acompanhamento no momento</h3>

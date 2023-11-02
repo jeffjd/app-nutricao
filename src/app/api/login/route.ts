@@ -1,26 +1,30 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../lib/prisma';
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   const { email, senha, tipodecadastro } = await request.json();
-  if (tipodecadastro === 'paciente') {
-    const user = await prisma.paciente.findFirst({
-      where: {
-        email,
-      },
-    });
-    if (user) {
-      const { senha, ...data } = user;
-      return NextResponse.json({ ok: true, data });
+  try {
+    if (tipodecadastro === 'paciente') {
+      const user = await prisma.paciente.findFirst({
+        where: {
+          email,
+        },
+      });
+      if (user) {
+        return NextResponse.json({ user });
+      }
+    } else {
+      const user = await prisma.nutricionista.findFirst({
+        where: {
+          email,
+        },
+      });
+      if (user) {
+        return NextResponse.json({ user });
+      }
     }
-  } else {
-    const user = await prisma.nutricionista.findFirst({
-      where: {
-        email,
-      },
-    });
-    if (user) {
-      return NextResponse.json({ message: `Temos o nutricionista!` });
-    }
+    return NextResponse.json({ message: `Usuário não encontrado.` });
+  } catch (error) {
+    return NextResponse.json({ message: `Ocorreu um erro durante o login.` });
   }
 }

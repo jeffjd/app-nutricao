@@ -62,7 +62,11 @@ const RecipeCadastre: React.FC<IRecipeCadastre> = ({ nutricionistaId }) => {
 
         const response = await fetch(`/api/receita`, {
           method: 'POST',
-          body: JSON.stringify({ nome, ingredientes: newArray, nutricionistaId }),
+          body: JSON.stringify({
+            nome,
+            ingredientes: newArray,
+            nutricionistaId,
+          }),
         });
         const { ok, msg } = await response.json();
         if (ok) {
@@ -94,7 +98,7 @@ const RecipeCadastre: React.FC<IRecipeCadastre> = ({ nutricionistaId }) => {
 
           <AutoCompleteInput
             name="ingredientes"
-            label="ingredientes"
+            label="Ingredientes"
             options={list as IIngredient[]}
             value={values.ingredientes}
             setFieldValue={setFieldValue}

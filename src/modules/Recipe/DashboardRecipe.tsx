@@ -26,7 +26,7 @@ const DashboardRecipe: React.FC<IDashboardProps> = ({ auth }) => {
           }`}
           onClick={() => setNav(0)}
         >
-          Minhas receitas
+          Refeições
         </div>
 
         <div
@@ -35,7 +35,7 @@ const DashboardRecipe: React.FC<IDashboardProps> = ({ auth }) => {
           }`}
           onClick={() => setNav(1)}
         >
-          Criar receita
+          Criar refeição
         </div>
       </nav>
       <Context />

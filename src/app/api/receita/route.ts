@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     const receita = await prisma.receita.create({
       data: {
         nome,
+        nutricionistaId
       },
     });
 

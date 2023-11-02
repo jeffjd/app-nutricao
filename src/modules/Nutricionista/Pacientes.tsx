@@ -23,7 +23,7 @@ interface IPaciente {
 
 const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
   const router = useRouter();
-  const [nav, setNav] = useState<number>(1);
+  const [nav, setNav] = useState<number>(0);
 
   const { data, isLoading, mutate } = useSWR<IPaciente[]>(
     `/api/pacientes?nutricionistaId=${auth.id}`,
@@ -69,14 +69,14 @@ const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
   };
 
   const Context: { [key: number]: React.ReactNode } = {
-    0: (
+    0: <RenderMeusPacientes />,
+    1: (
       <CadastrarPaciente
         nutricionistaId={auth.id}
         nextStep={setNav}
         refreshMeusPacientes={mutate}
       />
     ),
-    1: <RenderMeusPacientes />,
   };
 
   return (
@@ -89,7 +89,7 @@ const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
             }`}
             onClick={() => setNav(0)}
           >
-            Cadastrar Paciente
+            Pacientes
           </div>
 
           <div
@@ -98,7 +98,7 @@ const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
             }`}
             onClick={() => setNav(1)}
           >
-            Meus Pacientes
+            Cadastrar Paciente
           </div>
         </nav>
         {isLoading ? <Spinner /> : Context[nav as number]}
