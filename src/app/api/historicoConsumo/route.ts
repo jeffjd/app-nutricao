@@ -48,6 +48,38 @@ export async function GET(request: NextRequest) {
 
       diasConsumidos = cleanArray(diasConsumidos);
 
+      let vetorConsumo: [string, number][] = diasConsumidos.map((dias) => [
+        dias.dias,
+        0,
+      ]);
+      for (let i = 0; receitasConsumidas.length > i; i++) {
+        for (
+          let j = 0;
+          receitasConsumidas[i].receitaConsumida.length > j;
+          j++
+        ) {
+          for (
+            let k = 0;
+            receitasConsumidas[i].receitaConsumida[j].receitaConsulta?.receita?.ingredientes?.length as number > k;
+            k++
+          ) {
+              const posicao = vetorConsumo.findIndex(
+                (array) =>
+                  array[0] ==
+                  receitasConsumidas[i].receitaConsumida[j].createdAt,
+              );
+              vetorConsumo[posicao][1] += (receitasConsumidas[i].receitaConsumida[j]
+              .receitaConsulta?.receita?.ingredientes[k].ingrediente
+              ?.calorias as number) * (receitasConsumidas[i].receitaConsumida[j]
+              .receitaConsulta?.receita?.ingredientes[k].quantidade as number);
+          }
+
+
+          //for (const prop in receitasConsumidas[i].receitaConsumida.receitaConsulta)
+          //vetorConsumo[vetorConsumo.findIndex((array) => array[0] == receitasConsumidas[i].receitaConsumida[j].createdAt)][1] += receitasConsumidas[i].receitaConsumida[j].receitaConsulta?.receita?.calorias as number
+        }
+      }
+
       // for (let i = 0; receitasConsumidas.length > i; i++) {
       //   for (
       //     let j = 0;
@@ -86,7 +118,11 @@ export async function GET(request: NextRequest) {
       //   }
       // }
 
-      return NextResponse.json({ diasConsumidos, receitasConsumidas });
+      return NextResponse.json({
+        diasConsumidos,
+        receitasConsumidas,
+        vetorConsumo,
+      });
     }
   } catch (error) {
     console.log(error);
