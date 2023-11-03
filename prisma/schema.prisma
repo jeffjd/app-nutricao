@@ -21,6 +21,7 @@ model paciente {
   nome            String
   email           String         @unique(map: "Paciente_email_key")
   senha           String
+  createdAt       DateTime       @default(now())
   nutricionista   nutricionista? @relation(fields: [nutricionistaId], references: [id])
   nutricionistaId String?
   consulta        consulta[]

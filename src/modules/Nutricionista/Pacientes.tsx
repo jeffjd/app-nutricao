@@ -1,13 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { FaUser } from 'react-icons/fa6';
+import { useMemo, useState } from 'react';
 import Spinner from '@/components/Spinner';
-import { Input } from '@/components';
 import useSWR from 'swr';
 import fetcher from '@/lib/fetch';
 import { useRouter } from 'next/navigation';
 import CadastrarPaciente from './CadastrarPaciente';
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from 'material-react-table';
+import { MRT_Localization_PT_BR } from 'material-react-table/locales/pt-BR';
+import { formatData } from '@/util/formatDate';
+import { Button } from '@/components';
 
 interface DashboardProps {
   auth: any;
@@ -30,33 +36,58 @@ const Pacientes: React.FC<DashboardProps> = ({ auth }) => {
     fetcher,
   );
 
-  const handleAbrirDetalhePaciente = (paciente: IPaciente) => {
-    router.push(`/nutricionista/consulta/${paciente.id}`);
+  const handleAbrirDetalhePaciente = (id: string) => {
+    router.push(`/nutricionista/consulta/${id}`);
   };
+
+  const columns = useMemo<MRT_ColumnDef<any>[]>(
+    () => [
+      {
+        accessorKey: 'nome',
+        header: 'Nome',
+        size: 150,
+      },
+      {
+        accessorKey: 'email',
+        header: 'E-mail',
+        size: 150,
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Criado em',
+        size: 200,
+        Cell: ({ cell }) => <span>{formatData(cell.getValue<string>())}</span>,
+      },
+    ],
+    [],
+  );
+
+  const table = useMaterialReactTable({
+    enableTopToolbar: false,
+    columns,
+    data: data || [],
+    localization: MRT_Localization_PT_BR,
+    enableFilters: false,
+    enableHiding: false,
+    enableRowActions: true,
+    positionActionsColumn: 'last',
+    renderRowActions: ({ row }) => {
+      return (
+        <Button
+          type="button"
+          onClick={() => handleAbrirDetalhePaciente(row.original.id)}
+        >
+          Consultas
+        </Button>
+      );
+    },
+  });
 
   const RenderMeusPacientes = () => {
     return (
       <>
         {data && data?.length > 0 ? (
-          <>
-            <div className="w-1/2 mx-auto my-10">
-              <Input label="" placeholder="Buscar pacientes" />
-            </div>
-            <div className="flex flex-wrap gap-4 mt-4 px-4">
-              {data?.map((item, index) => (
-                <div
-                  key={index}
-                  className="border rounded p-4 flex flex-col justify-center items-center gap-2 cursor-pointer"
-                  onClick={() => handleAbrirDetalhePaciente(item)}
-                >
-                  <div className="rounded-full h-14 w-14 bg-black/20 flex justify-center items-center">
-                    <FaUser size={24} className="text-white" />
-                  </div>
-                  <div>{item.nome}</div>
-                </div>
-              ))}
-            </div>
-          </>
+          <MaterialReactTable table={table} />
         ) : (
           <div>
             <h5 className="font-semibold text-xl text-center mt-10 border rounded-md p-4 w-fit mx-auto px-4">
