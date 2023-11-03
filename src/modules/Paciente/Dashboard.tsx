@@ -24,7 +24,7 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
   let novaData = new Date(dataAtual.getTime() + 86400000);
   let novaDataISO = novaData.toISOString();
 
-  //const dateNow = formatData(novaDataISO); //dia posterior
+  // const dateNow = formatData(novaDataISO); //dia posterior
   const dateNow = formatData(new Date().toISOString()); //dia de hoje
   const [select, setSelect] = useState<any[]>([]);
 
@@ -34,6 +34,11 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
     mutate: consultaMutate,
   } = useSWR(
     `/api/historicoConsulta?pacienteId=${auth.id}&status=true`,
+    fetcher,
+  );
+
+  const { data: pacientPoints, isLoading: isLoadingPacientPoints } = useSWR(
+    auth && auth.id ? `/api/points?pacienteId=${auth.id}` : null,
     fetcher,
   );
 
@@ -129,14 +134,24 @@ const Dashboard: React.FC<DashboardProps> = ({ auth }) => {
             <strong className="mr-1">Paciente:</strong>
             {auth.nome}
           </h6>
-          <p>
+          <p className="mb-3">
             <strong className="mr-1">Email:</strong>
             {auth.email}
           </p>
+          {pacientPoints?.points > 0 ? (
+            <p>
+              <strong className="mr-1">Pontos:</strong>
+              {pacientPoints.points}
+            </p>
+          ) : null}
         </div>
       </div>
       <div>
-        {isLoadingConsulta || isLoadingReceitaConsumida ? <Spinner /> : null}
+        {isLoadingConsulta ||
+        isLoadingPacientPoints ||
+        isLoadingReceitaConsumida ? (
+          <Spinner />
+        ) : null}
         {consulta && consulta[0] ? (
           <div>
             <h3 className="text-xl text-center my-4 font-bold">

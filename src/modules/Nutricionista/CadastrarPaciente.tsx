@@ -36,7 +36,7 @@ const CadastrarPaciente: React.FC<CadastrarPacienteProps> = ({
         if (ok) {
           toast.success(msg);
           refreshMeusPacientes();
-          nextStep(1);
+          nextStep(0);
         }
       } catch (error) {
         toast.warning('Falha no cadastro');

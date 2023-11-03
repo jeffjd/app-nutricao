@@ -6,10 +6,12 @@ import Spinner from '@/components/Spinner';
 import useSWR from 'swr';
 import fetcher from '@/lib/fetch';
 import { FaTimes } from 'react-icons/fa';
-import { Input, Modal } from '@/components';
+import { Button, Input, Modal } from '@/components';
 import { toast } from 'react-toastify';
 import { FormikHelpers, useFormik } from 'formik';
 import { formatData, timestampData } from '@/util/formatDate';
+import VMasker from 'vanilla-masker';
+import { handleIMC } from '@/util/functionIMC';
 
 interface IConsulta {
   createdAt: string;
@@ -30,9 +32,10 @@ interface HistoricoConsultaProps {
 }
 
 interface IInitialValues {
-  dataInicio: string;
-  duracao: string;
-  receitas: IReceita[];
+  pesoFinal: string;
+  altura: string;
+  imc: string;
+  points: number;
 }
 
 interface IReceita {
@@ -58,6 +61,8 @@ interface IIngredienteQuantidade {
 
 const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
   const [open, setOpen] = useState<IConsulta | null>(null);
+  const [resultado, setResultado] = useState('');
+  const [Loading, setLoading] = useState<boolean>(false);
 
   const somarCalorias = (ingredientes: IIngredienteQuantidade[]) => {
     let soma: number = 0;
@@ -81,48 +86,77 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
     setOpen(consulta);
   };
 
+  const { data: graficoMaldito, isLoading: isLoadingGraficoMaldito } = useSWR(
+    open ? `/api/historicoConsumo?consultaId=${open.id}` : null,
+    fetcher,
+  );
+
   const initialValues: IInitialValues = {
-    dataInicio: '',
-    duracao: '',
-    receitas: [],
+    pesoFinal: '',
+    altura: '',
+    imc: '',
+    points: 0,
   };
 
-  const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
+  const { values, handleSubmit, setFieldValue } = useFormik({
     initialValues,
     onSubmit: async (values, formikHelpers: FormikHelpers<IInitialValues>) => {
+      setLoading(true);
       try {
+        const consultaId = open?.id;
         const response = await fetch(`/api/consulta`, {
-          method: 'POST',
-          body: JSON.stringify({ ...values, pacienteId: paciente.id }),
+          method: 'PUT',
+          body: JSON.stringify({
+            ...values,
+            pesoFinal: Number(values.pesoFinal),
+            consultaId,
+          }),
         });
         const { ok, msg } = await response.json();
         if (ok) {
-          toast.success(msg);
           formikHelpers.resetForm({ values: initialValues });
+          setOpen(null);
+          toast.success(msg);
+          mutate();
         } else toast.warning(msg);
       } catch (error) {
         toast.warning('Falha no cadastro');
       } finally {
+        setLoading(false);
       }
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      const pesoPerdidoEsperado = open?.pesoInicial - open?.pesoObjetivo;
+      const pesoPerdidoFinal = open?.pesoInicial - Number(values.pesoFinal);
+
+      if (pesoPerdidoFinal >= pesoPerdidoEsperado * 0.7) {
+        console.log('menor ou igual a 70%');
+        setFieldValue('points', open.retorno * 10);
+      } else {
+        console.log('menor ou igual a 50%');
+        setFieldValue('points', (open.retorno * 10) / 2);
+      }
+    }
+  }, [values.imc]);
+
   return (
     <>
       <section className="max-w-6xl m-auto">
-        {isLoading ? (
+        {isLoading || isLoadingGraficoMaldito || Loading ? (
           <Spinner />
         ) : data && data?.length > 0 ? (
           <>
-            {/* <div className="w-1/2 mx-auto my-10">
-              <Input label="" placeholder="Buscar pacientes" />
-            </div> */}
             <div className="flex flex-wrap min-w-[200px] gap-4 mt-4 px-4">
               {data?.map((item, index) => (
                 <div
                   key={index}
                   className="relative border rounded p-4 flex flex-col justify-center items-center gap-2 cursor-pointer"
-                  onClick={() => selectedConsulta(item)}
+                  onClick={() => {
+                    selectedConsulta(item);
+                  }}
                 >
                   {/* <div className="absolute right-0 top-0 flex justify-center items-center h-5 w-5 bg-red-700/30 rounded-sm">
                     <FaTimes size={12} className="text-red-600" />
@@ -160,97 +194,102 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
           </div>
         )}
       </section>
-      {/* <Modal
+      <Modal
         title="Gerenciar consulta"
         isOpen={!!open}
         onClose={() => setOpen(null)}
       >
         <div>
-          <div>
+          {open && (
             <div>
-              <p>
-                <strong className="mr-1">Peso inicial:</strong>
-                {open?.pesoInicial} kg
-              </p>
-              <p>
-                <strong className="mr-1">Objetivo peso:</strong>
-                {open?.pesoObjetivo} kg
-              </p>
-
-              <p>
-                <strong className="mr-1">Data:</strong>
-                {formatData(open?.createdAt as string)}
-              </p>
-              <p>
-                O retorno ficara marcado para o dia:
-                <strong className="mr-1">
-                  {formatData(timestampData(open?.retorno as number))}
-                </strong>
-              </p>
+              <div>
+                <p>
+                  <strong className="mr-1">Peso inicial:</strong>
+                  {open.pesoInicial} kg
+                </p>
+                <p>
+                  <strong className="mr-1">Objetivo peso:</strong>
+                  {open.pesoObjetivo} kg
+                </p>
+                <p>
+                  <strong className="mr-1">Atendimento:</strong>
+                  {formatData(open.createdAt)}
+                </p>
+                <p>
+                  <strong className="mr-1">Retorno:</strong>
+                  {formatData(timestampData(open.retorno))}
+                </p>
+              </div>
+              <hr className="my-3" />
+              <form onSubmit={handleSubmit}>
+                <Input
+                  label="Peso atingido"
+                  name="pesoFinal"
+                  type="text"
+                  icon="KG"
+                  value={values.pesoFinal}
+                  onChange={(event) => {
+                    setFieldValue(
+                      'pesoFinal',
+                      VMasker.toPattern(event.target.value, '999'),
+                    );
+                    setFieldValue('points', 0);
+                  }}
+                  onMouseLeave={() =>
+                    handleIMC(
+                      values.pesoFinal,
+                      values.altura,
+                      setResultado,
+                      setFieldValue,
+                    )
+                  }
+                />
+                <Input
+                  label="Altura"
+                  name="altura"
+                  type="text"
+                  icon="M"
+                  value={values.altura}
+                  onChange={(event) => {
+                    setFieldValue(
+                      'altura',
+                      VMasker.toPattern(event.target.value, '9,99'),
+                    );
+                    setFieldValue('points', 0);
+                  }}
+                  onMouseLeave={() =>
+                    handleIMC(
+                      values.pesoFinal,
+                      values.altura,
+                      setResultado,
+                      setFieldValue,
+                    )
+                  }
+                />
+                {resultado ? (
+                  <p className="mt-3 mb-3 border-2 p-4 rounded-md border-blue-700 text-center font-semibold bg-blue-500 text-blue-700">
+                    {resultado}
+                  </p>
+                ) : null}
+                {values.points !== 0 ? (
+                  <>
+                    <Input
+                      readOnly
+                      label="Pontuação a receber"
+                      type="text"
+                      icon="Pontos"
+                      value={values.points}
+                    />
+                    <Button type="submit" className="mt-3">
+                      Finalizar Atendimento
+                    </Button>
+                  </>
+                ) : null}
+              </form>
             </div>
-            <p>
-              <strong className="mr-1">Data:</strong>
-              {formatData(open?.createdAt as string)}
-            </p>
-            <form className="space-y-6 mt-3" onSubmit={handleSubmit}>
-              <Input
-                label="Duração"
-                name="dracao"
-                type="number"
-                value={values.duracao}
-                onChange={handleChange}
-              />
-              <Input
-                label="Data de Início"
-                name="dataInicio"
-                type="date"
-                value={values.dataInicio}
-                onChange={handleChange}
-              />
-
-              <h4>
-                <strong>Receitas</strong>
-              </h4>
-
-              {receitas &&
-                receitas.map((itemReceita, indexReceita) => (
-                  <div
-                    key={indexReceita}
-                    className="w-full border rounded-lg drop-shadow-md p-4 cursor-pointer"
-                  >
-                    <h4 className="font-semibold text-lg border-b border-gray-100">
-                      {itemReceita.nome}
-                    </h4>
-                    <div className="mt-3">
-                      <div className="border rounded p-2 mb-2">
-                        <p className="pb-2">
-                          <strong className="pr-1">Ingrediente:</strong>
-                          {itemReceita.ingredientes.map(
-                            (
-                              IngredienteQuantidade,
-                              indexIngredienteQuantidade,
-                            ) => (
-                              <span
-                                key={indexIngredienteQuantidade}
-                                className="border rounded-md p-1 ml-2"
-                              >
-                                {IngredienteQuantidade.ingrediente.nome}
-                              </span>
-                            ),
-                          )}
-                        </p>
-                        <p>
-                          <strong className="pr-1">Calorias Totais:</strong>
-                          {somarCalorias(itemReceita.ingredientes)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </form>
-          </div>
+          )}
         </div>
-      </Modal> */}
+      </Modal>
     </>
   );
 };

@@ -51,6 +51,34 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  const { pesoFinal, altura, imc, points, consultaId } = await request.json();
+
+  try {
+    await prisma.consulta.update({
+      where: { id: consultaId },
+      data: {
+        pesoFinal,
+        altura,
+        imc,
+        points,
+        status: false,
+      },
+    });
+
+    return NextResponse.json({
+      ok: true,
+      msg: 'Consulta finalizada com sucesso!',
+    });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({
+      message: `Ocorreu um erro.`,
+    });
+  }
+}
+
+
 export async function GET(request: NextRequest) {
   const close = request.nextUrl.searchParams.get('close');
   const consultaId = request.nextUrl.searchParams.get('consultaId');

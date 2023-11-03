@@ -20,8 +20,7 @@ const Input: React.FC<InputProps> = ({ label, icon, ...props }) => {
           {...props}
         />
         {icon ? (
-          <span className="absolute right-0 top-0 h-[35px] w-[50px] flex justify-center items-center bg-gray-500 text-white">
-            {icon}
+          <span className="absolute right-0 top-0 h-[35px] w-[75px] flex justify-center items-center bg-gray-500 text-white">            {icon}
           </span>
         ) : null}
       </div>

@@ -4,8 +4,9 @@ import { FormikHelpers, useFormik } from 'formik';
 import { Button, Input, Modal, TextArea } from '../../components';
 import { toast } from 'react-toastify';
 import VMasker from 'vanilla-masker';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Spinner from '@/components/Spinner';
+import { handleIMC } from '@/util/functionIMC';
 
 interface IInitialValues {
   peso: string;
@@ -64,35 +65,6 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
     setOpen(!open);
   };
 
-  const handleIMC = (): void => {
-    if (values.peso !== '' && values.altura !== '') {
-      const pesoFloat = parseFloat(values.peso.replace(',', '.'));
-      const alturaFloat = parseFloat(values.altura.replace(',', '.'));
-
-      if (isNaN(pesoFloat) || isNaN(alturaFloat) || alturaFloat === 0) {
-        setResultado('Por favor, insira valores válidos.');
-        return;
-      }
-
-      const imc = pesoFloat / Math.pow(alturaFloat, 2);
-
-      let classificacao = '';
-      if (imc < 18.5) {
-        classificacao = 'Abaixo do peso';
-      } else if (imc < 24.9) {
-        classificacao = 'Peso normal';
-      } else if (imc < 29.9) {
-        classificacao = 'Sobrepeso';
-      } else {
-        classificacao = 'Obesidade';
-      }
-
-      // Define o resultado
-      setResultado(`O IMC do paciente é ${imc.toFixed(2)} - ${classificacao}`);
-      setFieldValue('imc', imc.toFixed(2));
-    }
-  };
-
   return (
     <>
       {loading ? <Spinner /> : null}
@@ -113,7 +85,9 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
                 VMasker.toPattern(event.target.value, '999'),
               );
             }}
-            onMouseLeave={handleIMC}
+            onMouseLeave={() =>
+              handleIMC(values.peso, values.altura, setResultado, setFieldValue)
+            }
           />
           <Input
             label="Altura"
@@ -127,7 +101,9 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
                 VMasker.toPattern(event.target.value, '9,99'),
               );
             }}
-            onMouseLeave={handleIMC}
+            onMouseLeave={() =>
+              handleIMC(values.peso, values.altura, setResultado, setFieldValue)
+            }
           />
           <Input
             readOnly

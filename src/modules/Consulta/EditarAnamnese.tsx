@@ -120,10 +120,10 @@ const EditarAnamnese: React.FC<EditarAnamneseProps> = ({ anamnese }) => {
             <strong className="mr-1"> Atualizado em:</strong>
             {formatData(anamnese.updatedAt)}
           </p>
-          <p className='whitespace-pre-line'>
+          <p className="whitespace-pre-line">
             <strong className="mr-1">Observação:</strong>
             <br />
-            {anamnese.observacao} kg
+            {anamnese.observacao}
           </p>
         </div>
         {/* <form className=" flex flex-col gap-3" onSubmit={handleSubmit}>
