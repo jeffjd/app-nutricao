@@ -6,7 +6,7 @@ import Spinner from '@/components/Spinner';
 import useSWR from 'swr';
 import fetcher from '@/lib/fetch';
 import { FaTimes } from 'react-icons/fa';
-import { Button, Input, Modal } from '@/components';
+import { Button, GraficoLinha, Input, Modal } from '@/components';
 import { toast } from 'react-toastify';
 import { FormikHelpers, useFormik } from 'formik';
 import { formatData, timestampData } from '@/util/formatDate';
@@ -220,6 +220,7 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
                   {formatData(timestampData(open.retorno))}
                 </p>
               </div>
+              <GraficoLinha cal={graficoMaldito || [[]]} />
               <hr className="my-3" />
               <form onSubmit={handleSubmit}>
                 <Input

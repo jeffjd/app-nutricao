@@ -8,6 +8,7 @@ import CardList from './CardList';
 import { AutoCompleteInput, Select } from './Select';
 import Modal from './Modal';
 import TextArea from './TextArea';
+import GraficoLinha from './GraficoLinha';
 
 export {
   Input,
@@ -21,4 +22,5 @@ export {
   Select,
   Modal,
   TextArea,
+  GraficoLinha,
 };
