@@ -54,6 +54,7 @@ model receita {
   receitaConsulta receitaConsulta[]
   nutricionista   nutricionista?          @relation(fields: [nutricionistaId], references: [id])
   nutricionistaId String?
+  status          Boolean                 @default(true)
 }
 
 model ingredienteQuantidade {

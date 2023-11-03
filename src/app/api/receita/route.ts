@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
   try {
     const nutricionistaId = request.nextUrl.searchParams.get('nutricionistaId');
     const receitas = await prisma.receita.findMany({
-      where: { nutricionistaId },
+      where: { nutricionistaId, status: true },
       include: {
         ingredientes: {
           include: {
