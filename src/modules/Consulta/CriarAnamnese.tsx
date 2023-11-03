@@ -1,7 +1,7 @@
 'use client';
 
 import { FormikHelpers, useFormik } from 'formik';
-import { Button, Input, Modal } from '../../components';
+import { Button, Input, Modal, TextArea } from '../../components';
 import { toast } from 'react-toastify';
 import VMasker from 'vanilla-masker';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ interface IInitialValues {
   altura: string;
   imc: string;
   meta: string;
+  observacao: string;
 }
 
 interface CriarAnamneseProps {
@@ -31,6 +32,7 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
     altura: '',
     imc: '',
     meta: '',
+    observacao: '',
   };
 
   const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
@@ -86,7 +88,7 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
       }
 
       // Define o resultado
-      setResultado(`Seu IMC é ${imc.toFixed(2)} - ${classificacao}`);
+      setResultado(`O IMC do paciente é ${imc.toFixed(2)} - ${classificacao}`);
       setFieldValue('imc', imc.toFixed(2));
     }
   };
@@ -147,6 +149,13 @@ const CriarAnamnese: React.FC<CriarAnamneseProps> = ({
             type="text"
             value={values.meta}
             onChange={handleChange}
+          />
+          <TextArea
+            label="Observações"
+            name="observacao"
+            value={values.observacao}
+            onChange={handleChange}
+            placeholder="Observações sobre o paciente..."
           />
           <div>
             <Button type="submit">Cadastrar</Button>

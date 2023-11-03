@@ -23,7 +23,13 @@ const Dashboard: React.FC<DashboardProps> = ({ auth, paciente }) => {
   const Context = () => {
     switch (nav) {
       case 0:
-        return <CriarConsulta paciente={paciente} nextStep={setNav} nutricionistaId={auth.id}/>;
+        return (
+          <CriarConsulta
+            paciente={paciente}
+            nextStep={setNav}
+            nutricionistaId={auth.id}
+          />
+        );
       case 1:
         return <HistoricoConsulta paciente={paciente} />;
     }
@@ -38,18 +44,22 @@ const Dashboard: React.FC<DashboardProps> = ({ auth, paciente }) => {
     <>
       <section>
         <div className="max-w-6xl m-auto bg-azulescuro">
-          <div className="flex justify-around py-12">
-            <span className="flex justify-center gap-5 items-center text-3xl md:text-5xl">
+          <div className="flex justify-between py-1">
+            <div className="flex">
+              <span className="flex align-middle text-2xl pl-10 pr-4">
+                {auth.nome}
+              </span>
+              <div className="bg-gray-500 w-8 h-8 rounded-full flex justify-center items-center">
+                <FaUser size={10} className="text-white" />
+              </div>
+            </div>
+            <div className="pr-5">
               <Link
                 href="/nutricionista"
-                className="bg-gray-400 rounded-full h-10 w-10 flex justify-center items-center"
+                className="bg-gray-400 rounded-full w-8 h-8 flex justify-center items-center"
               >
                 <FaAngleLeft size={22} />
               </Link>
-              {auth.nome}
-            </span>
-            <div className="bg-gray-500 w-28 h-28 rounded-full md:w-36 md:h-36 flex justify-center items-center">
-              <FaUser size={40} className="text-white" />
             </div>
           </div>
         </div>

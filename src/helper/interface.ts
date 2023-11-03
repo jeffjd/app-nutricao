@@ -3,6 +3,7 @@ export interface IAnamnese {
     id: string;
     imc: string;
     meta: string;
+    observacao: string;
     pacienteId: string;
     peso: string;
     updatedAt: string;

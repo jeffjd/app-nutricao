@@ -33,6 +33,7 @@ model anamnese {
   altura     String
   imc        String
   meta       String
+  observacao String?
   updatedAt  DateTime  @updatedAt
   paciente   paciente? @relation(fields: [pacienteId], references: [id])
   pacienteId String    @unique

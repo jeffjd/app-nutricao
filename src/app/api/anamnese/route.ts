@@ -3,7 +3,7 @@ import prisma from '../../../lib/prisma';
 import { format } from 'date-fns-tz';
 
 export async function POST(request: Request) {
-  const { peso, altura, imc, meta, pacienteId } = await request.json();
+  const { peso, altura, imc, meta, observacao, pacienteId } = await request.json();
 
   const dataHoraBrasil = new Date();
   dataHoraBrasil.setUTCHours(dataHoraBrasil.getUTCHours() - 3);
@@ -20,6 +20,7 @@ export async function POST(request: Request) {
         imc,
         peso,
         meta,
+        observacao,
         pacienteId,
         updatedAt: dataHoraString,
       },

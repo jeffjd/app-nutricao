@@ -23,6 +23,9 @@ const config: Config = {
       },
     },
   },
+  extend: {
+    whiteSpace: ['responsive', 'hover', 'focus'],
+  },
   plugins: [],
 };
 export default config;
