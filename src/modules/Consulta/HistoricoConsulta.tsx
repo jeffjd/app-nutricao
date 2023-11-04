@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { FaTableList } from 'react-icons/fa6';
 import Spinner from '@/components/Spinner';
 import useSWR from 'swr';
@@ -12,6 +12,13 @@ import { FormikHelpers, useFormik } from 'formik';
 import { formatData, timestampData } from '@/util/formatDate';
 import VMasker from 'vanilla-masker';
 import { handleIMC } from '@/util/functionIMC';
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from 'material-react-table';
+import { MRT_Localization_PT_BR } from 'material-react-table/locales/pt-BR';
+import { GrFormView } from 'react-icons/gr';
 
 interface IConsulta {
   createdAt: string;
@@ -63,6 +70,34 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
   const [open, setOpen] = useState<IConsulta | null>(null);
   const [resultado, setResultado] = useState('');
   const [Loading, setLoading] = useState<boolean>(false);
+
+  const columns = useMemo<MRT_ColumnDef<any>[]>(
+    () => [
+      {
+        accessorKey: 'createdAt',
+        header: 'Atendimento',
+        size: 150,
+        Cell: ({ cell }) => <span>{formatData(cell.getValue<string>())}</span>,
+      },
+      {
+        accessorKey: 'retorno',
+        header: 'Retorno',
+        size: 150,
+        Cell: ({ cell }) => <span>{formatData(timestampData(cell.getValue<number>()))}</span>,
+      },
+      {
+        accessorKey: 'pesoInicial',
+        header: 'Peso Inicial',
+        size: 150,
+      },
+      {
+        accessorKey: 'pesoObjetivo',
+        header: 'Peso Objetivo',
+        size: 150,
+      },
+    ],
+    [],
+  );
 
   const somarCalorias = (ingredientes: IIngredienteQuantidade[]) => {
     let soma: number = 0;
@@ -142,51 +177,79 @@ const HistoricoConsulta: React.FC<HistoricoConsultaProps> = ({ paciente }) => {
     }
   }, [values.imc]);
 
+  const table = useMaterialReactTable({
+    enableTopToolbar: false,
+    columns,
+    data: data || [],
+    localization: MRT_Localization_PT_BR,
+    enableFilters: false,
+    enableHiding: false,
+    enableRowActions: true,
+    positionActionsColumn: 'last',
+    renderRowActions: ({ row }) => {
+      return (
+        <span className="flex gap-2">
+          <Button
+            type="button"
+            model="outline"
+            className="!w-fit text-xs h-8 px-2 py-0 pt-1"
+            onClick={() => selectedConsulta(row.original)}
+          >
+            <GrFormView size={18} className="text-black" />
+          </Button>
+        </span>
+      );
+    },
+  });
+
   return (
     <>
       <section className="max-w-6xl m-auto">
         {isLoading || isLoadingGraficoMaldito || Loading ? (
           <Spinner />
         ) : data && data?.length > 0 ? (
-          <>
-            <div className="flex flex-wrap min-w-[200px] gap-4 mt-4 px-4">
-              {data?.map((item, index) => (
-                <div
-                  key={index}
-                  className="relative border rounded p-4 flex flex-col justify-center items-center gap-2 cursor-pointer"
-                  onClick={() => {
-                    selectedConsulta(item);
-                  }}
-                >
-                  {/* <div className="absolute right-0 top-0 flex justify-center items-center h-5 w-5 bg-red-700/30 rounded-sm">
-                    <FaTimes size={12} className="text-red-600" />
-                  </div> */}
-                  <div className="rounded-lg h-14 w-14 bg-black/20 flex justify-center items-center">
-                    <FaTableList size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <p>
-                      <strong className="mr-1">Peso inicial:</strong>
-                      {item.pesoInicial} kg
-                    </p>
-                    <p>
-                      <strong className="mr-1">Objetivo peso:</strong>
-                      {item.pesoObjetivo} kg
-                    </p>
-                    <p>
-                      <strong className="mr-1">Atendimento:</strong>
-                      {formatData(item.createdAt)}
-                    </p>
-                    <p>
-                      <strong className="mr-1">Retorno:</strong>
-                      {formatData(timestampData(item.retorno))}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="max-w-6xl m-auto">
+            <MaterialReactTable table={table} />
+          </div>
         ) : (
+          // <>
+          //   <div className="flex flex-wrap min-w-[200px] gap-4 mt-4 px-4">
+          //     {data?.map((item, index) => (
+          //       <div
+          //         key={index}
+          //         className="relative border rounded p-4 flex flex-col justify-center items-center gap-2 cursor-pointer"
+          //         onClick={() => {
+          //           selectedConsulta(item);
+          //         }}
+          //       >
+          //         {/* <div className="absolute right-0 top-0 flex justify-center items-center h-5 w-5 bg-red-700/30 rounded-sm">
+          //           <FaTimes size={12} className="text-red-600" />
+          //         </div> */}
+          //         <div className="rounded-lg h-14 w-14 bg-black/20 flex justify-center items-center">
+          //           <FaTableList size={24} className="text-white" />
+          //         </div>
+          //         <div>
+          //           <p>
+          //             <strong className="mr-1">Peso inicial:</strong>
+          //             {item.pesoInicial} kg
+          //           </p>
+          //           <p>
+          //             <strong className="mr-1">Objetivo peso:</strong>
+          //             {item.pesoObjetivo} kg
+          //           </p>
+          //           <p>
+          //             <strong className="mr-1">Atendimento:</strong>
+          //             {formatData(item.createdAt)}
+          //           </p>
+          //           <p>
+          //             <strong className="mr-1">Retorno:</strong>
+          //             {formatData(timestampData(item.retorno))}
+          //           </p>
+          //         </div>
+          //       </div>
+          //     ))}
+          //   </div>
+          // </>
           <div>
             <h5 className="font-semibold text-xl text-center mt-10 border rounded-md p-4 w-fit mx-auto px-4">
               Não existe histórico no momento

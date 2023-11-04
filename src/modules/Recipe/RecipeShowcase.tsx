@@ -1,12 +1,20 @@
 'use client';
 
 import { Button, Input, Modal } from '@/components';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import useSWR from 'swr';
 import fetcher from '../../lib/fetch';
 import Spinner from '../../components/Spinner';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+import { GrFormView, GrFormClose } from 'react-icons/gr';
 import { toast } from 'react-toastify';
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from 'material-react-table';
+import { MRT_Localization_PT_BR } from 'material-react-table/locales/pt-BR';
+import { formatData } from '@/util/formatDate';
 
 interface IIngrediente {
   calorias: number;
@@ -36,7 +44,10 @@ interface IRecipeShowcase {
 const RecipeShowcase: React.FC<IRecipeShowcase> = ({ nutricionistaId }) => {
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [openEdit, setOpenEdit] = useState<boolean>(false);
-  const [receitaSelecionada, setReceitaSelecionada] = useState<IReceita | null>(null);
+  const [openView, setOpenView] = useState<boolean>(false);
+  const [receitaSelecionada, setReceitaSelecionada] = useState<IReceita | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const { data, isLoading, mutate } = useSWR<IReceita[]>(
     `/api/receita?nutricionistaId=${nutricionistaId}`,
@@ -50,14 +61,16 @@ const RecipeShowcase: React.FC<IRecipeShowcase> = ({ nutricionistaId }) => {
   const handleDeleteReceita = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/delete/receita?receitaId=${receitaSelecionada?.id}`);
+      const response = await fetch(
+        `/api/delete/receita?receitaId=${receitaSelecionada?.id}`,
+      );
       const { ok, msg } = await response.json();
       if (ok) {
         toast.success(msg);
         setReceitaSelecionada(null);
         handleOpenDeleteModal();
         mutate();
-      } else{
+      } else {
         toast.info(msg);
       }
     } catch (error) {
@@ -65,12 +78,91 @@ const RecipeShowcase: React.FC<IRecipeShowcase> = ({ nutricionistaId }) => {
     } finally {
       setLoading(false);
     }
-
-  }
+  };
 
   const handleOpenEditModal = (): void => {
     setOpenEdit(!openEdit);
   };
+
+  const handleOpenViewModal = (): void => {
+    setOpenView(!openView);
+  };
+
+  const columns = useMemo<MRT_ColumnDef<any>[]>(
+    () => [
+      {
+        accessorKey: 'nome',
+        header: 'Nome',
+        size: 150,
+      },
+      {
+        accessorKey: 'ingredientes',
+        header: 'Ingredientes',
+        size: 150,
+        Cell: ({ cell }) => {
+          return (
+            <span>
+              {cell.getValue<IIngredienteQuantidade[]>().map((ingrediente) => (
+                <span key={ingrediente.id} className="p-1 m-1 border-2 rounded border-gray-300">
+                  {ingrediente.ingrediente.nome}
+                  {/* {ingrediente.ingrediente.nome} - {ingrediente.quantidade}{' '}
+                  {ingrediente.ingrediente.unidade} */}
+                </span>
+              ))}
+            </span>
+          );
+        },
+      },
+    ],
+    [],
+  );
+
+  const table = useMaterialReactTable({
+    enableTopToolbar: false,
+    columns,
+    data: data || [],
+    localization: MRT_Localization_PT_BR,
+    enableFilters: false,
+    enableHiding: false,
+    enableRowActions: true,
+    positionActionsColumn: 'last',
+    renderRowActions: ({ row }) => {
+      return (
+        <span className="flex gap-2">
+          <Button
+            type="button"
+            model="outline"
+            className="!w-fit text-xs h-8 px-2 py-0 pt-1"
+            onClick={() => (
+              setReceitaSelecionada(row.original), handleOpenViewModal()
+            )}
+          >
+            <GrFormView size={18} className="text-black" />
+          </Button>
+          <Button
+            type="button"
+            model="outline"
+            className="!w-fit text-xs h-8 px-2 py-0 pt-1"
+            onClick={() => (
+              setReceitaSelecionada(row.original), handleOpenEditModal()
+            )}
+          >
+            <AiFillEdit size={18} className="text-black" />
+          </Button>
+          <Button
+            type="button"
+            model="outline"
+            className="!w-fit text-xs h-8 px-2 py-0 pt-1"
+            onClick={() => (
+              setReceitaSelecionada(row.original), handleOpenDeleteModal()
+            )}
+          >
+            <AiFillDelete size={18} className="text-black" />
+          </Button>
+        </span>
+      );
+    },
+  });
 
   return (
     <>
@@ -78,82 +170,13 @@ const RecipeShowcase: React.FC<IRecipeShowcase> = ({ nutricionistaId }) => {
       <div className="mb-10">
         {data && data.length > 0 ? (
           <>
-            <div className="w-1/2 mx-auto my-10">
-              <Input label="" placeholder="Buscar..." />
-            </div>
-            <div className="flex flex-wrap gap-5 justify-center mt-4">
-              {data.map((itemReceita, indexReceita) => (
-                <div
-                  key={indexReceita}
-                  className="w-1/5 border rounded-lg drop-shadow-md p-4 cursor-pointer"
-                >
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      model="outline"
-                      className="!w-fit text-xs h-8 px-2 py-0 pt-1"
-                      //onClick={handleOpenModal}
-                    >
-                      <AiFillEdit size={18} className="text-black" />
-                    </Button>
-                    <Button
-                      type="button"
-                      model="outline"
-                      className="!w-fit text-xs h-8 px-2 py-0 pt-1"
-                      onClick={() => (
-                        setReceitaSelecionada(itemReceita),
-                        handleOpenDeleteModal()
-                      )}
-                    >
-                      <AiFillDelete size={18} className="text-black" />
-                    </Button>
-                  </div>
-                  <h4 className="font-semibold text-lg border-b border-gray-100">
-                    {itemReceita.nome}
-                  </h4>
-                  <div className="mt-3">
-                    {itemReceita.ingredientes.map(
-                      (
-                        itemIngredienteQuantidade,
-                        indexIngredienteQuantidade,
-                      ) => (
-                        <div
-                          key={indexIngredienteQuantidade}
-                          className="border rounded p-2 mb-2"
-                        >
-                          <div className="flex flex-col gap-1 text-sm">
-                            <p>
-                              <strong className="pr-1">Ingrediente:</strong>
-                              {itemIngredienteQuantidade.ingrediente.nome}
-                            </p>
-                            <p>
-                              <strong className="pr-1">Quantidade:</strong>
-                              {itemIngredienteQuantidade.quantidade}
-                            </p>
-                            <p>
-                              <strong className="pr-1">Calorias:</strong>
-                              {itemIngredienteQuantidade.ingrediente.calorias *
-                                itemIngredienteQuantidade.quantidade}
-                            </p>
-                            <p>
-                              <strong className="pr-1">Unidade:</strong>
-                              {itemIngredienteQuantidade.ingrediente.unidade}
-                            </p>
-                          </div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
             <Modal
-              title="Excluir Receita"
+              title="Excluir Refeição"
               isOpen={openDelete}
               onClose={handleOpenDeleteModal}
             >
               <div>
-                <p>Tem certeza que quer excluir a receita?</p>
+                <p>Tem certeza que quer excluir a refeição?</p>
                 <p>
                   <strong className="mr-1">
                     Essa ação não poderá ser desfeita.
@@ -188,8 +211,60 @@ const RecipeShowcase: React.FC<IRecipeShowcase> = ({ nutricionistaId }) => {
               isOpen={openEdit}
               onClose={handleOpenEditModal}
             >
-              Editar Receita
+              Editar Refeição
             </Modal>
+            <Modal
+              title="Visualizar Refeição"
+              isOpen={openView}
+              onClose={() => (
+                handleOpenViewModal(), setReceitaSelecionada(null)
+              )}
+            >
+              <h4 className="font-semibold text-lg border-b border-gray-100">
+                {receitaSelecionada?.nome}
+              </h4>
+              <div className="mt-3">
+                {receitaSelecionada?.ingredientes.map(
+                  (itemIngredienteQuantidade, indexIngredienteQuantidade) => (
+                    <div
+                      key={indexIngredienteQuantidade}
+                      className="border rounded p-2 mb-2"
+                    >
+                      <div className="flex flex-col gap-1 text-sm">
+                        <p>
+                          <strong className="pr-1">Ingrediente:</strong>
+                          {itemIngredienteQuantidade.ingrediente.nome}
+                        </p>
+                        <p>
+                          <strong className="pr-1">Quantidade:</strong>
+                          {itemIngredienteQuantidade.quantidade}
+                        </p>
+                        <p>
+                          <strong className="pr-1">Calorias:</strong>
+                          {itemIngredienteQuantidade.ingrediente.calorias *
+                            itemIngredienteQuantidade.quantidade}
+                        </p>
+                        <p>
+                          <strong className="pr-1">Unidade:</strong>
+                          {itemIngredienteQuantidade.ingrediente.unidade}
+                        </p>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            </Modal>
+            {data && data?.length > 0 ? (
+              <div className="max-w-6xl m-auto">
+                <MaterialReactTable table={table} />
+              </div>
+            ) : (
+              <div>
+                <h5 className="font-semibold text-xl text-center mt-10 border rounded-md p-4 w-fit mx-auto px-4">
+                  Você não possui nenhum pacientes.
+                </h5>
+              </div>
+            )}
           </>
         ) : (
           <div>
